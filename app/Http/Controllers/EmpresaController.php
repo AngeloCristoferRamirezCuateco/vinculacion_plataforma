@@ -38,6 +38,6 @@ class EmpresaController extends Controller
 
         Empresa::create($request->all());
 
-        return redirect()->route("empresas.index")->with("Succes","Empresa registrada");
+        return redirect()->route('dashboard')->with('success', 'Empresa creada exitosamente.');
     }
 }
