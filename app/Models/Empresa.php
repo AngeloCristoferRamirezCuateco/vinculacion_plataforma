@@ -12,6 +12,9 @@ class Empresa extends Model
 
     // Nombre de la tabla
     protected $table = 'Empresas';
+    // Columna primaria personalizada
+    protected $primaryKey = 'id_empresa';
+
 
     // Atributos que son asignables en masa
     protected $fillable = [
