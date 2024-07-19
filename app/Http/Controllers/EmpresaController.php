@@ -10,9 +10,10 @@ class EmpresaController extends Controller
     /*Declaramos una funcion llamada index, esta funcion sera similar a la funcion del archivo
     web.php, en este caso se sigue la misma metodologia, se declara una funcion sin parametros
     que retornara la vista que se encuentra en la carpeta empresas*/
-    // public function index(){
-    //     return view('empresas.index');
-    // }
+    public function inicio(){
+        return view('empresas.index');
+        //return response()->json(['csrf_token' => csrf_token()], 200);
+    }
 
     //Function to register company
     // Método para registrar una nueva empresa
@@ -25,6 +26,8 @@ class EmpresaController extends Controller
             'areaEmpresa' => 'required|string|max:255',
             'representanteEmpresa' => 'required|string|max:255',
             'direccionEmpresa' => 'required|string|max:255',
+            'correoEmpresa' => 'required|string|max:255',
+            'passwordEmpresa' => 'required|string|max:255',
             'rfcEmpresa' => 'required|string|max:13',
             'evaluacionEmpresa' => 'required|integer|min:1|max:10',
         ]);
@@ -34,7 +37,7 @@ class EmpresaController extends Controller
         return response()->json(['message' => 'Empresa creada exitosamente.'], 201);
     }
 
-    // Método para mostrar todas las empresas
+    //Método para mostrar todas las empresas
     public function index()
     {
         $empresas = Empresa::all();
@@ -55,6 +58,8 @@ class EmpresaController extends Controller
                 'areaEmpresa' => 'required|string|max:255',
                 'representanteEmpresa' => 'required|string|max:255',
                 'direccionEmpresa' => 'required|string|max:255',
+                'correoEmpresa' => 'required|string|max:255',
+                'passwordEmpresa' => 'required|string|max:255',
                 'rfcEmpresa' => 'required|string|max:13',
                 'evaluacionEmpresa' => 'nullable|integer|min:1|max:10',
             ]);

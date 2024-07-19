@@ -22,6 +22,7 @@ return new class extends Migration
             $table->string("apellidoMaterno");
             $table->string("telefonoUsuario");
             $table->string("correoUsuario");
+            $table->string("passwordUsuario");
             $table->integer("evaluacionUsuario");
             $table->binary("curriculumUsuario");
             $table->timestamps();

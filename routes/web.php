@@ -5,6 +5,10 @@ use App\Http\Controllers\UsuarioController;
 use App\Http\Controllers\ConvenioController;
 use App\Http\Controllers\ProyectoController;
 use App\Http\Controllers\VacanteController;
+use App\Http\Controllers\AplicacionVacanteController;
+use App\Http\Controllers\RolController;
+use App\Http\Controllers\UsuarioRolController;
+use App\Http\Controllers\login;
 
 //Definimos una ruta con el metodo get y definimos la direccion para acceder a la vista "/index", en este caso
 //no declararemos una funcion ya que esta se encuentra en el controlador EmpresasController, para ello necesitamos
@@ -12,7 +16,9 @@ use App\Http\Controllers\VacanteController;
 //y traer al metodo "index"
 //Syntax: Route::get (Ruta con metodo get) ('/index' "direccion de acceso" ,[EmpresaController::class "uso del controlador
 // junto a la clase", 'index' "uso de la funcion que se encuentra en el controlador"]);
-// Route::get('/index', [EmpresaController::class, 'index']);
+//Route::get('/index', [EmpresaController::class, 'index']);
+
+Route::get('/', [EmpresaController::class, 'inicio'])->name('empresas.inicio');
 
 Route::get('/empresas', [EmpresaController::class, 'index'])->name('empresas.index');
 Route::get('/empresas/create', [EmpresaController::class, 'create'])->name('empresas.create');
@@ -47,3 +53,23 @@ Route::post('/vacantes', [VacanteController::class, 'store'])->name('vacantes.st
 Route::get('/vacantes/{id}', [VacanteController::class, 'show'])->name('vacantes.show');
 Route::put('/vacantes/{id}', [VacanteController::class, 'update'])->name('vacantes.update');
 Route::delete('/vacantes/{id}', [VacanteController::class, 'destroy'])->name('vacantes.destroy');
+
+Route::get('/aplicaciones', [AplicacionVacanteController::class, 'index'])->name('aplicaciones.index');
+Route::post('/aplicaciones', [AplicacionVacanteController::class, 'store'])->name('aplicaciones.store');
+Route::get('/aplicaciones/{id}', [AplicacionVacanteController::class, 'show'])->name('aplicaciones.show');
+Route::put('/aplicaciones/{id}', [AplicacionVacanteController::class, 'update'])->name('aplicaciones.update');
+Route::delete('/aplicaciones/{id}', [AplicacionVacanteController::class, 'destroy'])->name('aplicaciones.destroy');
+
+Route::get('/roles', [RolController::class, 'index'])->name('roles.index');
+Route::post('/roles', [RolController::class, 'store'])->name('roles.store');
+Route::get('/roles/{id}', [RolController::class, 'show'])->name('roles.show');
+Route::put('/roles/{id}', [RolController::class, 'update'])->name('roles.update');
+Route::delete('/roles/{id}', [RolController::class, 'destroy'])->name('roles.destroy');
+
+Route::get('/usuario-roles', [UsuarioRolController::class, 'index'])->name('usuarioRoles.index');
+Route::post('/usuario-roles', [UsuarioRolController::class, 'store'])->name('usuarioRoles.store');
+Route::get('/usuario-roles/{id}', [UsuarioRolController::class, 'show'])->name('usuarioRoles.show');
+Route::put('/usuario-roles/{id}', [UsuarioRolController::class, 'update'])->name('usuarioRoles.update');
+Route::delete('/usuario-roles/{id}', [UsuarioRolController::class, 'destroy'])->name('usuarioRoles.destroy');
+
+Route::post('/login', [login::class, 'loginUser'])->name('login');

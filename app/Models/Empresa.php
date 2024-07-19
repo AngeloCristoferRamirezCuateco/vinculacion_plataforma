@@ -24,6 +24,8 @@ class Empresa extends Model
         'areaEmpresa',
         'representanteEmpresa',
         'direccionEmpresa',
+        'correoEmpresa',
+        'passwordEmpresa',
         'rfcEmpresa',
         'evaluacionEmpresa',
     ];

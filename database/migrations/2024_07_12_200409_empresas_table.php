@@ -27,6 +27,8 @@ return new class extends Migration
             $table->string('areaEmpresa');
             $table->string('representanteEmpresa');
             $table->string('direccionEmpresa');
+            $table->string('correoEmpresa');
+            $table->string('passwordEmpresa');
             //Este campo a diferencia de de "nombreEmpresa" tiene como limite 13 caracteres por la naturaleza del dato 
             //que contendra, ya que al tratarse de RFC solo tendra 13 caracteres
             $table->string('rfcEmpresa',13);

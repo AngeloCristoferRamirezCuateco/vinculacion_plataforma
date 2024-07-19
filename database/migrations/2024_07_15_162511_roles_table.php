@@ -15,16 +15,12 @@ return new class extends Migration
     {
         Schema::create("Roles", function (Blueprint $table) {
             $table->bigIncrements("id_rol");
+            $table->integer("rol");
             $table->string("nombreRol");
             $table->timestamps();
         });
     }
 
-    /**
-     * Reverse the migrations.
-     *
-     * @return void
-     */
     public function down()
     {
         Schema::dropIfExists("Roles");
