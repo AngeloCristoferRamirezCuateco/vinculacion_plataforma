@@ -19,10 +19,10 @@ class login extends Controller
              'password' => 'required|string',
          ]);
  
-         $credentials = [
-             'correoUsuario' => $request->email,
-             'passwordUsuario' => $request->password,
-         ];
+        //  $credentials = [
+        //      'correoUsuario' => $request->email,
+        //      'passwordUsuario' => $request->password,
+        //  ];
  
          // Verificar las credenciales
          $user = Usuario::where('correoUsuario', $request->email)->first();
@@ -36,13 +36,17 @@ class login extends Controller
                  $rol = Rol::find($usuarioRol->id_rol);
                  switch ($rol->rol) {
                      case 1:
-                        return response()->json(['message' => 'Usted es un estudiante'], 200);
+                        //return response()->json(['message' => 'Usted es un estudiante'], 200);
+                        return view('dashboars.Alumnos.dashboardAlumnos');
                      case 2:
-                        return response()->json(['message' => 'Usted es un docente'], 200);
+                        //return response()->json(['message' => 'Usted es un docente'], 200);
+                        return view('dashboars.Docentes.dashboardDocentes');
                      case 3:
-                        return response()->json(['message' => 'Usted es un representante'], 200);
+                        //return response()->json(['message' => 'Usted es un representante'], 200);
+                        return view('dashboars.Representantes.dashboardRepresentantes');
                     case 4:
-                        return response()->json(['message' => 'Usted es un administrador'], 200);
+                        // return response()->json(['message' => 'Usted es un administrador'], 200);
+                        return view('dashboars.Administradores.dashboardAdmin');
                      default:
                          return response()->json(['message' => 'Rol no reconocido'], 200);
                  }
