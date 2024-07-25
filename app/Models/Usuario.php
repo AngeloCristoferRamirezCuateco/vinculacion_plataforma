@@ -34,4 +34,8 @@ class Usuario extends Model implements AuthenticatableContract
     {
         return $this->belongsTo(Empresa::class, 'id_empresa', 'id_empresa');
     }
+    public function rolesUsuario()
+    {
+        return $this->hasMany(UsuarioRol::class, 'id_usuario', 'id_usuario');
+    }
 }

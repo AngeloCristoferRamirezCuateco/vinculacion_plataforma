@@ -1,4 +1,4 @@
-@include ('share1.head')
+@include ('share.head')
 <main class="main" id="top">
     <div class="container" data-layout="container">
         <script>
@@ -9,10 +9,10 @@
                 container.classList.add('container-fluid');
             }
         </script>
-        @include ('share1.nav')
+        @include ('share.nav')
         <div class="content">
-            @include ('share1.nav_profile')
-            <form class="row g-3 needs-validation" method="POST" action="#">
+            @include ('share.nav_profile')
+            <form class="row g-3 needs-validation" method="POST" action="{{ route('usuarios.register') }}">
                 @csrf
                 <h1>Registro de Usuarios</h1>
                 <div class="col-md-4">
@@ -38,13 +38,17 @@
                 <div class="col-md-4">
                     <label class="form-label" for="id_empresa">Institución</label>
                     <select class="form-control" id="id_empresa" name="id_empresa" required>
-                        
+                        @foreach ($empresas as $empresa)
+                        <option value="{{ $empresa->id_empresa }}">{{ $empresa->nombreEmpresa }}</option>
+                        @endforeach
                     </select>   
                 </div>
                 <div class="col-md-4">
                     <label class="form-label" for="id_rol">Rol del Usuario</label>
                     <select class="form-control" id="id_rol" name="id_rol" required>
-                        
+                        @foreach ($roles as $rol)
+                        <option value="{{ $rol->id_rol }}">{{ $rol->nombreRol }}</option>
+                        @endforeach
                     </select>   
                 </div>
                 <div class="col-md-4">
@@ -55,8 +59,8 @@
                     <button class="btn btn-primary" type="submit">Enviar</button>
                 </div>
             </form>
-            @include ('share1.footer')
-            @include ('share1.btn-config')
+            @include ('share.footer')
+            @include ('share.btn-config')
         </div>
     </div>
 </main>

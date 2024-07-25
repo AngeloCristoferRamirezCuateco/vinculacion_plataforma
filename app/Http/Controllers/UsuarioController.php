@@ -4,33 +4,65 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Usuario;
+use App\Models\UsuarioRol;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Validation\ValidationException;
 use Illuminate\Support\Facades\Hash;
 
 class UsuarioController extends Controller
 {
+
     // Registrar usuarios
     public function register(Request $request)
     {
-        $validatedData = $request->validate([
-            'id_empresa' => 'required|exists:Empresas,id_empresa',
-            'nombreUsuario' => 'required|string|max:255',
-            'apellidoPaterno' => 'required|string|max:255',
-            'apellidoMaterno' => 'nullable|string|max:255',
-            'telefonoUsuario' => 'required|string|max:20',
-            'correoUsuario' => 'required|email|max:255|unique:Usuarios,correoUsuario',
-            'passwordUsuario' => 'required|string|max:255',
-            'evaluacionUsuario' => 'nullable|integer|min:1|max:10',
-            'curriculumUsuario' => 'nullable|string|max:255',
-        ]);
+        Log::info('Inicio del registro de usuario.', ['request' => $request->all()]);
 
-        // Encriptar la contraseña
-        $validatedData['passwordUsuario'] = Hash::make($request->passwordUsuario);
+        try {
+            $validatedData = $request->validate([
+                'id_empresa' => 'required|exists:Empresas,id_empresa',
+                'nombreUsuario' => 'required|string|max:255',
+                'apellidoPaterno' => 'required|string|max:255',
+                'apellidoMaterno' => 'nullable|string|max:255',
+                'telefonoUsuario' => 'required|string|max:20',
+                'correoUsuario' => 'required|email|max:255|unique:Usuarios,correoUsuario',
+                'passwordUsuario' => 'required|string|max:255',
+                'evaluacionUsuario' => 'nullable|integer|min:1|max:10',
+                'curriculumUsuario' => 'nullable|string|max:255',
+                'id_rol' => 'required|exists:Roles,id_rol',
+            ]);
 
-        Usuario::create($validatedData);
+            Log::info('Datos validados correctamente.', ['validatedData' => $validatedData]);
 
-        return response()->json(['message' => 'Usuario creado exitosamente.'], 201);
+            if (!$request->filled('evaluacionUsuario')) {
+                $validatedData['evaluacionUsuario'] = 0; // o cualquier valor predeterminado que prefieras
+            }
+            if (!$request->filled('curriculumUsuario')) {
+                $validatedData['curriculumUsuario'] = ''; // o cualquier valor predeterminado que prefieras
+            }
+
+            // Encriptar la contraseña
+            $validatedData['passwordUsuario'] = Hash::make($request->passwordUsuario);
+
+            $usuario = Usuario::create($validatedData);
+
+            Log::info('Usuario creado correctamente.', ['usuario' => $usuario]);
+
+            UsuarioRol::create([
+                'id_usuario' => $usuario->id_usuario,
+                'id_rol' => $request->id_rol,
+            ]);
+
+            Log::info('Rol asignado correctamente.', ['id_usuario' => $usuario->id_usuario, 'id_rol' => $request->id_rol]);
+
+            //return response()->json(['message' => 'Usuario creado exitosamente.'], 201);
+            return redirect()->route('admin.panelregisteruser');
+        } catch (ValidationException $e) {
+            Log::error('Error de validación.', ['errors' => $e->errors()]);
+            return response()->json(['errors' => $e->errors()], 422);
+        } catch (\Exception $e) {
+            Log::error('Error durante el registro del usuario.', ['exception' => $e->getMessage()]);
+            return response()->json(['message' => 'Error durante el registro del usuario.'], 500);
+        }
     }
     //Mostrar usuarios
     public function index()
@@ -46,45 +78,37 @@ class UsuarioController extends Controller
     }
     // Actualizar usuario
     public function update(Request $request, $id)
-    {
-        Log::info('Inicio de la función update.', ['id' => $id, 'request' => $request->all()]);
+{
+    Log::info('Inicio de la función update.', ['id' => $id, 'request' => $request->all()]);
 
-        try {
-            $validatedData = $request->validate([
-                'id_empresa' => 'required|exists:Empresas,id_empresa',
-                'nombreUsuario' => 'required|string|max:255',
-                'apellidoPaterno' => 'required|string|max:255',
-                'apellidoMaterno' => 'nullable|string|max:255',
-                'telefonoUsuario' => 'required|string|max:20',
-                'correoUsuario' => 'required|email|max:255|unique:Usuarios,correoUsuario,' . $id . ',id_usuario',
-                'passwordUsuario' => 'nullable|string|max:255', // Hacer nullable para que no sea obligatorio
-                'evaluacionUsuario' => 'nullable|integer|min:1|max:10',
-                'curriculumUsuario' => 'nullable|string|max:255',
-            ]);
+    try {
+        $validatedData = $request->validate([
+            'nombreUsuario' => 'required|string|max:255',
+            'apellidoPaterno' => 'required|string|max:255',
+            'apellidoMaterno' => 'nullable|string|max:255',
+            'correoUsuario' => 'required|email|max:255|unique:Usuarios,correoUsuario,' . $id . ',id_usuario',
+        ]);
 
-            if (!empty($request->passwordUsuario)) {
-                $validatedData['passwordUsuario'] = Hash::make($request->passwordUsuario); // Encriptar la contraseña si se proporciona
-            }
+        Log::info('Datos validados.', ['validatedData' => $validatedData]);
 
-            Log::info('Datos validados.', ['validatedData' => $validatedData]);
+        $usuario = Usuario::findOrFail($id);
+        Log::info('Usuario encontrado.', ['usuario' => $usuario]);
 
-            $usuario = Usuario::findOrFail($id);
-            Log::info('Usuario encontrado.', ['usuario' => $usuario]);
+        $usuario->update($validatedData);
+        Log::info('Datos actualizados.', ['usuario' => $usuario]);
 
-            $usuario->update($validatedData);
-            Log::info('Datos actualizados.', ['usuario' => $usuario]);
+        //return response()->json(['message' => 'Usuario actualizado correctamente.'], 200);
+        return redirect()->route('admin.paneleditUsers');
 
-            return response()->json(['message' => 'Usuario actualizado correctamente.'], 200);
+    } catch (ValidationException $e) {
+        Log::error('Error de validación.', ['errors' => $e->errors()]);
+        return response()->json(['errors' => $e->errors()], 422);
 
-        } catch (ValidationException $e) {
-            Log::error('Error de validación.', ['errors' => $e->errors()]);
-            return response()->json(['errors' => $e->errors()], 422);
-
-        } catch (\Exception $e) {
-            Log::error('Error al actualizar el usuario.', ['exception' => $e->getMessage()]);
-            return response()->json(['message' => 'Error al actualizar el usuario.'], 500);
-        }
+    } catch (\Exception $e) {
+        Log::error('Error al actualizar el usuario.', ['exception' => $e->getMessage()]);
+        return response()->json(['message' => 'Error al actualizar el usuario.'], 500);
     }
+}
 
     //Metodo borrar usuario
     public function destroy($id)

@@ -9,7 +9,11 @@ use App\Http\Controllers\AplicacionVacanteController;
 use App\Http\Controllers\RolController;
 use App\Http\Controllers\UsuarioRolController;
 use App\Http\Controllers\login;
-
+use App\Models\Empresa;
+use App\Models\Rol;
+use App\Models\Usuario;
+use App\Models\UsuarioRol;
+use App\Http\Controllers\DashboardController;
 //Definimos una ruta con el metodo get y definimos la direccion para acceder a la vista "/index", en este caso
 //no declararemos una funcion ya que esta se encuentra en el controlador EmpresasController, para ello necesitamos
 //importar el controlador desde esta carpeta:'use App\Http\Controllers\EmpresaController;' para luego ingresar a su clase
@@ -20,19 +24,64 @@ use App\Http\Controllers\login;
 
 Route::get('/', [EmpresaController::class, 'inicio'])->name('empresas.inicio');
 
+####################################Rutas-para-administradores###################################################
+
+Route::get('/panelAdmin', function(){
+    return view('dashboars.Administradores.dashboardAdmin');
+})->name('admin.panel');
+
+Route::get('/panelAdmin/registerUsers',function(){
+    $empresas = Empresa::all();
+    $roles = Rol::all();
+    return view('dashboars.Administradores.formularioUsuario',compact('empresas','roles'));
+})->name('admin.panelregisteruser');
+
+Route::get('/panelAdmin/registerEmpresas',function(){
+    $empresas = Empresa::all();
+    $roles = Rol::all();
+    return view('dashboars.Administradores.fromularioEmpresa',compact('empresas','roles'));
+})->name('admin.panelregisterempresa');
+
+Route::get('/panelAdmin/editUsers',function(){
+    $usuarios=Usuario::all();
+    return view('dashboars.Administradores.tablasalumnos',compact('usuarios'));
+})->name('admin.paneleditUsers');
+
+Route::get('/panelAdmin/editEmpresas',function(){
+    $empresas=Empresa::all();
+    return view('dashboars.Administradores.tablasempresas',compact('empresas'));
+})->name('admin.paneleditEmpresas');
+
+Route::get('/dashboard/data', [DashboardController::class, 'index'])->name('dashboard.index');
+################################Rutas-para-representanes#####################################################
+Route::get('/panelRepresentante',function(){
+    return view('dashboars\Representantes\dashboardRepresentantes');
+})->name('representante.panelInicio');
+
+Route::get('/dashboard/vacantes',function(){
+    return view('dashboars\Representantes\detallesdevacante');
+})->name('representante.panelVacante');
+################################Rutas-para-docentes##########################################################
+Route::get('/panelDocente',function(){
+    return view('dashboars\Docentes\dashboardDocentes');
+})->name('docente.panelInicio');
+################################Rutas-para-alumnos##########################################################
+Route::get('/panelAlumno',function(){
+    return view('dashboars\Alumnos\dashboardAlumnos');
+})->name('alumno.panelInicio');
+##############################################################################################################
 Route::get('/empresas', [EmpresaController::class, 'index'])->name('empresas.index');
 Route::get('/empresas/create', [EmpresaController::class, 'create'])->name('empresas.create');
 Route::post('/empresas', [EmpresaController::class, 'register'])->name('empresas.register');
-Route::get('/empresas/{id}', [EmpresaController::class, 'show'])->name('empresas.show');
 Route::get('/empresas/{id}/edit', [EmpresaController::class, 'edit'])->name('empresas.edit');
 Route::put('/empresas/{id}', [EmpresaController::class, 'update'])->name('empresas.update');
 Route::delete('/empresas/{id}', [EmpresaController::class, 'destroy'])->name('empresas.destroy');
 
 Route::get('/usuarios', [UsuarioController::class, 'index'])->name('usuarios.index');
-Route::get('/usuarios/create', [UsuarioController::class, 'create'])->name('usuarios.create');
+//Route::get('/usuarios/create', [UsuarioController::class, 'create'])->name('usuarios.create');
 Route::post('/usuarios', [UsuarioController::class, 'register'])->name('usuarios.register');
 Route::get('/usuarios/{id}', [UsuarioController::class, 'show'])->name('usuarios.show');
-Route::get('/usuarios/{id}/edit', [UsuarioController::class, 'edit'])->name('usuarios.edit');
+//Route::get('/usuarios/{id}/edit', [UsuarioController::class, 'edit'])->name('usuarios.edit');
 Route::put('/usuarios/{id}', [UsuarioController::class, 'update'])->name('usuarios.update');
 Route::delete('/usuarios/{id}', [UsuarioController::class, 'destroy'])->name('usuarios.destroy');
 
