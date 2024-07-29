@@ -8,6 +8,7 @@ use App\Models\UsuarioRol;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Validation\ValidationException;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Auth;
 
 class UsuarioController extends Controller
 {
@@ -118,4 +119,26 @@ class UsuarioController extends Controller
 
         return response()->json(['message' => 'Usuario eliminado correctamente.'], 200);
     }
+
+    
+    public function logoutUser(Request $request)
+    {
+        Log::info('Inicio del proceso de cierre de sesión.');
+
+        // Cierra la sesión del usuario autenticado
+        Auth::logout();
+        Log::info('Usuario deslogueado.');
+
+        // Invalida la sesión actual
+        $request->session()->invalidate();
+        Log::info('Sesión invalidada.');
+
+        // Regenera el token CSRF
+        $request->session()->regenerateToken();
+        Log::info('Token CSRF regenerado.');
+
+        // Redirige al usuario a la página principal u otra ruta
+        return redirect()->route('empresas.inicio');
+    }
+    
 }

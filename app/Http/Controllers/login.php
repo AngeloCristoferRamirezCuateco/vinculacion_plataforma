@@ -12,55 +12,83 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Validation\ValidationException;
+use Illuminate\Support\Facades\Log;
 
 class login extends Controller
 {
     public function loginUser(Request $request)
-    {
-        $this->checkRateLimiting($request);
+{
+    // Control de limitación de tasa
+    $this->checkRateLimiting($request);
 
-        $request->validate([
-            'email' => 'required|email',
-            'password' => 'required|string',
+    // Validación de los campos de entrada
+    $request->validate([
+        'email' => 'required|email',
+        'password' => 'required|string',
+    ]);
+
+    // Credenciales de usuario
+    $credentials = [
+        'correoUsuario' => $request->email,
+        'passwordUsuario' => $request->password,
+    ];
+
+    // Buscar usuario por correo
+    $user = Usuario::where('correoUsuario', $request->email)->first();
+
+    // Verificar si el usuario existe y la contraseña es correcta
+    if ($user && Hash::check($request->password, $user->passwordUsuario)) {
+        // Autenticar al usuario
+        Auth::login($user);
+        
+        // Regenerar ID de sesión para prevenir ataques de fijación de sesión
+        $request->session()->regenerate();
+
+        // Regenerar token CSRF
+        $request->session()->regenerateToken();
+
+        // Limpiar intentos de inicio de sesión
+        Session::forget('login_attempts');
+        RateLimiter::clear($this->throttleKey($request));
+
+        // Log del estado de la sesión
+        Log::info('Estado de la sesión después del inicio de sesión', [
+            'user_id' => $user->id_usuario,
+            'session_id' => session()->getId(),
+            'session_data' => session()->all(),
         ]);
 
-        $credentials = [
-            'correoUsuario' => $request->email,
-            'passwordUsuario' => $request->password,
-        ];
-
-        $user = Usuario::where('correoUsuario', $request->email)->first();
-
-        if ($user && Hash::check($request->password, $user->passwordUsuario)) {
-            Auth::login($user);
-            Session::forget('login_attempts');
-            RateLimiter::clear($this->throttleKey($request));
-
-            $usuarioRol = UsuarioRol::where('id_usuario', $user->id_usuario)->first();
-            if ($usuarioRol) {
-                $rol = Rol::find($usuarioRol->id_rol);
-                switch ($rol->rol) {
-                    case 1:
-                        return redirect()->route('alumno.panelInicio');
-                    case 2:
-                        return redirect()->route('docente.panelInicio');
-                    case 3:
-                        return redirect()->route('representante.panelInicio');
-                    case 4:
-                        return redirect()->route('dashboard.index');
-                    default:
-                        return response()->json(['message' => 'Rol no reconocido'], 200);
-                }
-            } else {
-                return response()->json(['message' => 'Rol no asignado'], 200);
+        // Obtener el rol del usuario
+        $usuarioRol = UsuarioRol::where('id_usuario', $user->id_usuario)->first();
+        if ($usuarioRol) {
+            $rol = Rol::find($usuarioRol->id_rol);
+            switch ($rol->rol) {
+                case 1:
+                    return redirect()->route('alumno.panelInicio');
+                case 2:
+                    return redirect()->route('docente.panelInicio');
+                case 3:
+                    $empresa = Empresa::all();
+                    $usuario = Usuario::all();
+                    return redirect()->route('representante.panelInicio', compact('empresa', 'usuario'));
+                case 4:
+                    return redirect()->route('dashboard.index');
+                default:
+                    return response()->json(['message' => 'Rol no reconocido'], 200);
             }
         } else {
-            Session::put('login_attempts', Session::get('login_attempts', 0) + 1);
-            $this->incrementLoginAttempts($request);
-            $attempts = Session::get('login_attempts');
-            return redirect()->back()->withErrors(['message' => "Email o contraseña incorrectos. Intentos: $attempts"]);
+            return response()->json(['message' => 'Rol no asignado'], 200);
         }
+    } else {
+        // Incrementar intentos de inicio de sesión en caso de falla
+        Session::put('login_attempts', Session::get('login_attempts', 0) + 1);
+        $this->incrementLoginAttempts($request);
+        $attempts = Session::get('login_attempts');
+        return redirect()->back()->withErrors(['message' => "Email o contraseña incorrectos. Intentos: $attempts"]);
     }
+}
+
+
 
     protected function checkRateLimiting(Request $request)
     {

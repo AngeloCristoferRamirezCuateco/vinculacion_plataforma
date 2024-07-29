@@ -29,7 +29,7 @@
                              <hr class="mb-0 navbar-vertical-divider" />
                          </div>
                      </div>
-                     <a class="nav-link" href="#">
+                     <a class="nav-link" href="{{route('representante.panelConvenio')}}">
                          <div class="d-flex align-items-center"><span class="nav-link-icon"><span class="fas fa-users "></span></span><span class="nav-link-text ps-1">Convenios</span>
                          </div>
                      </a>
@@ -41,16 +41,20 @@
                          <div class="d-flex align-items-center"><span class="nav-link-icon"><span class="fas fa-comments"></span></span><span class="nav-link-text ps-1">Proyectos</span>
                          </div>
                      </a>
-                     <a class="nav-link" href="#" role="button">
+                     <a class="nav-link" href="{{route('representante.panelInicio')}}" role="button">
                          <div class="d-flex align-items-center"><span class="nav-link-icon"><span class="fas fa-users "></span></span><span class="nav-link-text ps-1">Registrar Usuarios</span>
                          </div>
                      </a>
-                     <a class="nav-link" href="#" role="button">
+                     <a class="nav-link" href="{{route('representante.panelDocentes')}}" role="button">
                          <div class="d-flex align-items-center"><span class="nav-link-icon"><span class="fas fa-users "></span></span><span class="nav-link-text ps-1">Docentes</span>
                          </div>
                      </a>
-                     <a class="nav-link" href="#" role="button">
+                     <a class="nav-link" href="{{route('representante.panelAlumnos')}}" role="button">
                          <div class="d-flex align-items-center"><span class="nav-link-icon"><span class="fas fa-users "></span></span><span class="nav-link-text ps-1">Alumnos</span>
+                         </div>
+                     </a>
+                     <a class="nav-link" href="{{route('representante.panelDocumento')}}" role="button">
+                         <div class="d-flex align-items-center"><span class="nav-link-icon"><span class="fas fa-users "></span></span><span class="nav-link-text ps-1">Documentos</span>
                          </div>
                      </a>
                  </li>

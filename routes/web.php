@@ -14,6 +14,8 @@ use App\Models\Rol;
 use App\Models\Usuario;
 use App\Models\UsuarioRol;
 use App\Http\Controllers\DashboardController;
+use Illuminate\Support\Facades\Auth;
+
 //Definimos una ruta con el metodo get y definimos la direccion para acceder a la vista "/index", en este caso
 //no declararemos una funcion ya que esta se encuentra en el controlador EmpresasController, para ello necesitamos
 //importar el controlador desde esta carpeta:'use App\Http\Controllers\EmpresaController;' para luego ingresar a su clase
@@ -53,14 +55,55 @@ Route::get('/panelAdmin/editEmpresas',function(){
 })->name('admin.paneleditEmpresas');
 
 Route::get('/dashboard/data', [DashboardController::class, 'index'])->name('dashboard.index');
+
+Route::get('/panelAdmin/editarEmpresas',function(){
+    return view('dashboars.Administradores.editarempresa');
+})->name('admin.paneleditEmpresasdashboard');
 ################################Rutas-para-representanes#####################################################
 Route::get('/panelRepresentante',function(){
     return view('dashboars\Representantes\dashboardRepresentantes');
 })->name('representante.panelInicio');
 
-Route::get('/dashboard/vacantes',function(){
-    return view('dashboars\Representantes\detallesdevacante');
+Route::get('/dashboard/CrearVacantes',function(){
+    return view('dashboars\Representantes\crearVacante');
 })->name('representante.panelVacante');
+
+Route::get('/dashboard/listaAlumnos', function() {
+    // Obtener datos de sesión manualmente
+    $representanteId = session('user_id'); // o cualquier otro dato que hayas guardado
+
+    if (!$representanteId) {
+        return "Sin usuario";
+    }
+
+    // Obtener el usuario manualmente usando el ID de sesión
+    $representante = Usuario::find($representanteId);
+
+    if (!$representante) {
+        return "Usuario no encontrado";
+    }
+
+    $alumnos = Usuario::all();
+    $usuariosRol = UsuarioRol::all();
+
+    return view('dashboars.Representantes.listaAlumnos', compact('alumnos', 'usuariosRol', 'representante'));
+})->name('representante.panelAlumnos');
+
+
+
+Route::get('/dashboard/listaDocentes',function(){
+    $docentes = Usuario::all();
+    $usuariosRol = UsuarioRol::all();
+    return view('dashboars\Representantes\listaDocentes',compact('docentes','usuariosRol'));
+})->name('representante.panelDocentes');
+
+Route::get('/dashboard/crearConvenio',function(){
+    return view('dashboars.Representantes.crearConvenio');
+})->name('representante.panelConvenio');
+
+Route::get('/dashboard/documentos',function(){
+    return view('dashboars\Representantes\Documentos');
+})->name('representante.panelDocumento');
 ################################Rutas-para-docentes##########################################################
 Route::get('/panelDocente',function(){
     return view('dashboars\Docentes\dashboardDocentes');
@@ -122,3 +165,5 @@ Route::put('/usuario-roles/{id}', [UsuarioRolController::class, 'update'])->name
 Route::delete('/usuario-roles/{id}', [UsuarioRolController::class, 'destroy'])->name('usuarioRoles.destroy');
 
 Route::post('/login', [login::class, 'loginUser'])->name('login');
+
+Route::get('/logout', [UsuarioController::class, 'logoutUser'])->name('app.logout');

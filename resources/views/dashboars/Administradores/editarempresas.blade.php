@@ -10,42 +10,6 @@
             }
         </script>
         @include ('share.nav')
-        <div class="content">
-            @include ('share.nav_profile')
-            <h1>Empresas</h1>
-            <div class="table-responsive">
-                <table class="table align-middle">
-                    <thead>
-                        <tr>
-                            <th scope="col">Seleccionar</th>
-                            <th scope="col">Empresa</th>
-                            <th scope="col">Tipo de Empresa</th>
-                            <th scope="col">Area</th>
-                            <!--<th scope="col">Representante</th>-->
-                            <th scope="col">Dirección</th>
-                            <th scope="col">Correo</th>
-                            <th scope="col">RFC</th>
-                            <th scope="col">Calificación</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @foreach ($empresas as $empresa)
-                        <tr id="user-row-{{ $empresa->id_empresa }}">
-                            <td><input type="radio" name="selectedUser" onclick="fillForm({{ $empresa->id_empresa }})"></td>
-                            <td>{{ $empresa->nombreEmpresa }}</td>
-                            <td>{{ $empresa->tipoEmpresa }}</td>
-                            <td>{{ $empresa->areaEmpresa }}</td>
-                            <!--<td>{{ $empresa->representanteEmpresa }}</td>-->
-                            <td>{{ $empresa->direccionEmpresa }}</td>
-                            <td>{{ $empresa->correoEmpresa }}</td>
-                            <td>{{ $empresa->rfcEmpresa }}</td>
-                            <td>{{ $empresa->evaluacionEmpresa }}</td>
-                        </tr>
-                        @endforeach
-                    </tbody>
-                </table>
-            </div>
-            
             <form id="update-form" class="row g-3 needs-validation" method="POST" action="{{ route('empresas.update', 0) }}" novalidate>
                 @csrf
                 @method('PUT')
