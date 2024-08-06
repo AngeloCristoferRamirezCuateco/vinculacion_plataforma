@@ -3,48 +3,47 @@
 namespace App\Exceptions;
 
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
+use Illuminate\Database\QueryException;
 use Throwable;
 
 class Handler extends ExceptionHandler
 {
-    /**
-     * A list of exception types with their corresponding custom log levels.
-     *
-     * @var array<class-string<\Throwable>, \Psr\Log\LogLevel::*>
-     */
+    
     protected $levels = [
         //
     ];
 
-    /**
-     * A list of the exception types that are not reported.
-     *
-     * @var array<int, class-string<\Throwable>>
-     */
     protected $dontReport = [
         //
     ];
 
-    /**
-     * A list of the inputs that are never flashed to the session on validation exceptions.
-     *
-     * @var array<int, string>
-     */
     protected $dontFlash = [
         'current_password',
         'password',
         'password_confirmation',
     ];
 
-    /**
-     * Register the exception handling callbacks for the application.
-     *
-     * @return void
-     */
     public function register()
     {
+        $this->renderable(function (QueryException $e, $request) {
+            if ($e->getCode() === 'HY000' || $e->getCode() === '2002') {
+                // El código de error 2002 es específico de MySQL cuando no puede conectar con la base de datos
+                return response()->view('errors.database-error', [], 500);
+            }
+        });
+
         $this->reportable(function (Throwable $e) {
             //
         });
+    }
+
+    public function render($request, Throwable $exception)
+    {
+        if ($exception instanceof QueryException || $exception instanceof \PDOException) {
+            // Puedes personalizar la respuesta para excepciones de base de datos
+            return response()->view('errors.database', [], 500);
+        }
+
+        return parent::render($request, $exception);
     }
 }

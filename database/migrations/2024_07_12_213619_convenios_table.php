@@ -1,34 +1,25 @@
 <?php
+
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
-    /**
-     * Run the migrations.
-     *
-     * @return void
-     */
+
     public function up()
     {
-        Schema::create("Convenios", function (Blueprint $table) {
-            $table->bigIncrements("id_convenio");
-            $table->unsignedBigInteger("id_empresa_solicitante");
-            $table->unsignedBigInteger("id_empresa_provedor");
-            $table->date("fechaAcuerdo");
+        Schema::create('convenios', function (Blueprint $table) {
+            $table->id('id_convenio');
+            $table->foreignId('id_usuario_emisor')->constrained('Usuario')->onDelete('cascade');
+            $table->foreignId('id_usuario_receptor')->constrained('Usuario')->onDelete('cascade');
+            $table->string('documento_emisor')->nullable();
+            $table->string('documento_receptor')->nullable();
+            $table->boolean('convenido')->default(false);
             $table->timestamps();
-
-            $table->foreign("id_empresa_solicitante")->references("id_empresa")->on("Empresas")->onDelete("cascade");
-            $table->foreign("id_empresa_provedor")->references("id_empresa")->on("Empresas")->onDelete("cascade");
         });
     }
 
-    /**
-     * Reverse the migrations.
-     *
-     * @return void
-     */
     public function down()
     {
         Schema::dropIfExists("Convenios");

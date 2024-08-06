@@ -25,7 +25,7 @@
                             </tr>
                         </thead>
                         <tbody id="documentTableBody">
-                            <!-- Filas generadas dinámicamente con JavaScript -->
+                            
                         </tbody>
                     </table>
                 </div>

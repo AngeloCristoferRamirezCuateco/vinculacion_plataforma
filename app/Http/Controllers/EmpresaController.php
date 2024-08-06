@@ -171,7 +171,8 @@ class EmpresaController extends Controller
         $empresa = Empresa::findOrFail($id);
         $empresa->delete();
 
-        return response()->json(['message' => 'Empresa eliminada correctamente.'], 200);
+        //return response()->json(['message' => 'Empresa eliminada correctamente.'], 200);
+        return redirect()->back();
     }
 
     // Método para mostrar una empresa específica

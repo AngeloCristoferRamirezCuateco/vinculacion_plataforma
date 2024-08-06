@@ -9,28 +9,24 @@ class Convenio extends Model
 {
     use HasFactory;
 
-    // Nombre de la tabla
-    protected $table = 'Convenios';
-
-    // Columna primaria personalizada
+    protected $table = 'convenios';
     protected $primaryKey = 'id_convenio';
 
-    // Atributos que son asignables en masa
     protected $fillable = [
-        'id_empresa_solicitante',
-        'id_empresa_provedor',
-        'fechaAcuerdo',
+        'id_usuario_emisor',
+        'id_usuario_receptor',
+        'documento_emisor',
+        'documento_receptor',
+        'convenido',
     ];
 
-    // Relación: Convenio pertenece a una empresa solicitante
-    public function empresaSolicitante()
+    public function emisor()
     {
-        return $this->belongsTo(Empresa::class, 'id_empresa_solicitante', 'id_empresa');
+        return $this->belongsTo(Usuario::class, 'id_usuario_emisor');
     }
 
-    // Relación: Convenio pertenece a una empresa provedora
-    public function empresaProvedora()
+    public function receptor()
     {
-        return $this->belongsTo(Empresa::class, 'id_empresa_provedor', 'id_empresa');
+        return $this->belongsTo(Usuario::class, 'id_usuario_receptor');
     }
 }

@@ -27,6 +27,9 @@ class Usuario extends Model implements AuthenticatableContract
         'passwordUsuario',
         'evaluacionUsuario',
         'curriculumUsuario',
+        'descripcion',
+        'foto1',
+        'foto2',
     ];
 
     // Relación: Un usuario pertenece a una empresa

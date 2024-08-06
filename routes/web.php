@@ -8,7 +8,12 @@ use App\Http\Controllers\VacanteController;
 use App\Http\Controllers\AplicacionVacanteController;
 use App\Http\Controllers\RolController;
 use App\Http\Controllers\UsuarioRolController;
+use App\Http\Controllers\RepresentanteController;
+use App\Http\Controllers\AdministradorController;
+use App\Http\Controllers\DocenteController;
+use App\Http\Controllers\AlumnoController;
 use App\Http\Controllers\login;
+use App\Http\Controllers\PDFController;
 use App\Models\Empresa;
 use App\Models\Rol;
 use App\Models\Usuario;
@@ -27,91 +32,42 @@ use Illuminate\Support\Facades\Auth;
 Route::get('/', [EmpresaController::class, 'inicio'])->name('empresas.inicio');
 
 ####################################Rutas-para-administradores###################################################
+Route::get('/dashboard/data', [DashboardController::class, 'index'])->middleware('auth')->name('dashboard.index');
+Route::get('/panelAdmin',[AdministradorController::class,'panelAdmin'])->middleware('auth')->name('admin.panel');
+Route::get('/panelAdmin/registerUsers',[AdministradorController::class,'panelregisterUser'])->middleware('auth')->name('admin.panelregisteruser');
+Route::get('/panelAdmin/registerEmpresas',[AdministradorController::class,'panelregisterEmpresas'])->middleware('auth')->name('admin.panelregisterempresa');
+Route::get('/panelAdmin/listUsers',[AdministradorController::class,'paneleditUsers'])->middleware('auth')->name('admin.paneleditUsers');
+Route::get('/panelAdmin/listEmpresas',[AdministradorController::class,'paneleditEmpresas'])->middleware('auth')->name('admin.paneleditEmpresas');
+Route::get('/panelAdmin/editUsers/{id}',[AdministradorController::class,'editarUsuario'])->middleware('auth')->name('admin.editusers');
+Route::get('/panelAdmin/editEmpresa/{id}',[AdministradorController::class,'editarEmpresa'])->middleware('auth')->name('admin.editempresas');
+Route::get('/Perfil/Administrador',[AdministradorController::class,'perfilUsuario'])->middleware('auth')->name('admin.perfil');
+Route::put('/profile/update', [UsuarioController::class, 'updateProfile'])->middleware('auth')->name('profile.update');
 
-Route::get('/panelAdmin', function(){
-    return view('dashboars.Administradores.dashboardAdmin');
-})->name('admin.panel');
-
-Route::get('/panelAdmin/registerUsers',function(){
-    $empresas = Empresa::all();
-    $roles = Rol::all();
-    return view('dashboars.Administradores.formularioUsuario',compact('empresas','roles'));
-})->name('admin.panelregisteruser');
-
-Route::get('/panelAdmin/registerEmpresas',function(){
-    $empresas = Empresa::all();
-    $roles = Rol::all();
-    return view('dashboars.Administradores.fromularioEmpresa',compact('empresas','roles'));
-})->name('admin.panelregisterempresa');
-
-Route::get('/panelAdmin/editUsers',function(){
-    $usuarios=Usuario::all();
-    return view('dashboars.Administradores.tablasalumnos',compact('usuarios'));
-})->name('admin.paneleditUsers');
-
-Route::get('/panelAdmin/editEmpresas',function(){
-    $empresas=Empresa::all();
-    return view('dashboars.Administradores.tablasempresas',compact('empresas'));
-})->name('admin.paneleditEmpresas');
-
-Route::get('/dashboard/data', [DashboardController::class, 'index'])->name('dashboard.index');
-
-Route::get('/panelAdmin/editarEmpresas',function(){
-    return view('dashboars.Administradores.editarempresa');
-})->name('admin.paneleditEmpresasdashboard');
 ################################Rutas-para-representanes#####################################################
-Route::get('/panelRepresentante',function(){
-    return view('dashboars\Representantes\dashboardRepresentantes');
-})->name('representante.panelInicio');
-
-Route::get('/dashboard/CrearVacantes',function(){
-    return view('dashboars\Representantes\crearVacante');
-})->name('representante.panelVacante');
-
-Route::get('/dashboard/listaAlumnos', function() {
-    // Obtener datos de sesión manualmente
-    $representanteId = session('user_id'); // o cualquier otro dato que hayas guardado
-
-    if (!$representanteId) {
-        return "Sin usuario";
-    }
-
-    // Obtener el usuario manualmente usando el ID de sesión
-    $representante = Usuario::find($representanteId);
-
-    if (!$representante) {
-        return "Usuario no encontrado";
-    }
-
-    $alumnos = Usuario::all();
-    $usuariosRol = UsuarioRol::all();
-
-    return view('dashboars.Representantes.listaAlumnos', compact('alumnos', 'usuariosRol', 'representante'));
-})->name('representante.panelAlumnos');
-
-
-
-Route::get('/dashboard/listaDocentes',function(){
-    $docentes = Usuario::all();
-    $usuariosRol = UsuarioRol::all();
-    return view('dashboars\Representantes\listaDocentes',compact('docentes','usuariosRol'));
-})->name('representante.panelDocentes');
-
-Route::get('/dashboard/crearConvenio',function(){
-    return view('dashboars.Representantes.crearConvenio');
-})->name('representante.panelConvenio');
-
-Route::get('/dashboard/documentos',function(){
-    return view('dashboars\Representantes\Documentos');
-})->name('representante.panelDocumento');
+Route::get('/panelRepresentante',[RepresentanteController::class,'panelInicio'])->middleware('auth')->name('representante.panelInicio');
+Route::get('/dashboard/listaDocentes',[RepresentanteController::class,'panelListaDocentes'])->middleware('auth')->name('representante.panelDocentes');
+Route::get('/dashboard/crearConvenio',[RepresentanteController::class,'panelConvenios'])->middleware('auth')->name('representante.panelConvenio');
+Route::get('/dashboard/CrearVacantes',[RepresentanteController::class,'panelVacantes'])->middleware('auth')->name('representante.panelVacante');
+Route::get('/dashboard/listaAlumnos',[RepresentanteController::class,'panelListaAlumnos'])->middleware('auth')->name('representante.panelAlumnos');
+Route::get('/dashboard/documentos',[RepresentanteController::class,'panelDocumentos'])->middleware('auth')->name('representante.panelDocumento');
+Route::get('/dashboard', [RepresentanteController::class, 'dashboard'])->middleware('auth')->name('representante.dashboard');
+Route::post('/generate-pdf', [PDFController::class, 'generatePDF'])->middleware('auth')->name('generate.pdf');
+Route::get('/dashboard/editAlumno/{id}',[RepresentanteController::class,'editarAlumno'])->middleware('auth')->name('representante.editarAlumno');
+Route::get('/dashboard/editDocente/{id}',[RepresentanteController::class,'editarDocente'])->middleware('auth')->name('representante.editarDocente');
+Route::post('/dashboard/register', [UsuarioController::class, 'registerRepresentante'])->name('representante.registerRepresentante');
+Route::get('/Perfil/Representante',[RepresentanteController::class,'perfilUsuario'])->middleware('auth')->name('representante.perfil');
+Route::get('/Prueba',[RepresentanteController::class,'Prueva'])->middleware('auth')->name('prueba');
+Route::get('/Prueba/vista2',[RepresentanteController::class,'Prueva2'])->middleware('auth')->name('ruta.prueba2');
 ################################Rutas-para-docentes##########################################################
-Route::get('/panelDocente',function(){
-    return view('dashboars\Docentes\dashboardDocentes');
-})->name('docente.panelInicio');
+// Route::get('/panelDocente',function(){
+//     return view('dashboars\Docentes\dashboardDocentes');
+// })->name('docente.panelInicio');
+Route::get('/dashboard/inicio/Docente',[DocenteController::class,'dashboardDocente'])->middleware('auth')->name('docente.panelInicio');
 ################################Rutas-para-alumnos##########################################################
-Route::get('/panelAlumno',function(){
-    return view('dashboars\Alumnos\dashboardAlumnos');
-})->name('alumno.panelInicio');
+// Route::get('/panelAlumno',function(){
+//     return view('dashboars\Alumnos\dashboardAlumnos');
+// })->name('alumno.panelInicio');
+Route::get('/dashboard/inicio/Alumno',[AlumnoController::class,'inicioAlumno'])->middleware('auth')->name('alumno.panelInicio');
 ##############################################################################################################
 Route::get('/empresas', [EmpresaController::class, 'index'])->name('empresas.index');
 Route::get('/empresas/create', [EmpresaController::class, 'create'])->name('empresas.create');
@@ -129,10 +85,10 @@ Route::put('/usuarios/{id}', [UsuarioController::class, 'update'])->name('usuari
 Route::delete('/usuarios/{id}', [UsuarioController::class, 'destroy'])->name('usuarios.destroy');
 
 Route::get('/convenios', [ConvenioController::class, 'index'])->name('convenios.index');
-Route::post('/convenios', [ConvenioController::class, 'store'])->name('convenios.store');
-Route::get('/convenios/{id}', [ConvenioController::class, 'show'])->name('convenios.show');
+Route::post('/convenios', [ConvenioController::class, 'store'])->middleware('auth')->name('convenios.store'); //Importante//
+//Route::get('/convenios/{id}', [ConvenioController::class, 'show'])->name('convenios.show');
 Route::put('/convenios/{id}', [ConvenioController::class, 'update'])->name('convenios.update');
-Route::delete('/convenios/{id}', [ConvenioController::class, 'destroy'])->name('convenios.destroy');
+Route::delete('/convenios/{id_solicitud}', [ConvenioController::class, 'destroy'])->name('convenios.destroy'); //Importante//
 
 Route::get('/proyectos', [ProyectoController::class, 'index'])->name('proyectos.index');
 Route::post('/proyectos', [ProyectoController::class, 'store'])->name('proyectos.store');
@@ -167,3 +123,9 @@ Route::delete('/usuario-roles/{id}', [UsuarioRolController::class, 'destroy'])->
 Route::post('/login', [login::class, 'loginUser'])->name('login');
 
 Route::get('/logout', [UsuarioController::class, 'logoutUser'])->name('app.logout');
+
+Route::get('/convenios/gestion', [ConvenioController::class, 'gestionConvenios'])->name('representante.gestion');
+
+Route::post('/solicitudes/{id}/aceptar', [ConvenioController::class, 'aceptarSolicitud'])->name('solicitudes.aceptar');
+Route::post('/solicitudes/{id}/rechazar', [ConvenioController::class, 'rechazarSolicitud'])->name('solicitudes.rechazar');
+Route::delete('/solicitudes/{id}', [ConvenioController::class, 'eliminarSolicitud'])->name('solicitudes.destroy');

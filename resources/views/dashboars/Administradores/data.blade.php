@@ -12,7 +12,7 @@
         @include ('share.nav')
         <div class="content">
             @include ('share.nav_profile')
-            <h1>Dashboard</h1>
+            <h1>Estado actual de la plataforma</h1>
 
             <div class="row">
                 <div class="col-md-6">
@@ -34,21 +34,26 @@
                     <div class="card">
                         <div class="card-header">Usuarios por Rol</div>
                         <div class="card-body">
-                            <table class="table table-bordered">
+                            <table class="table table-bordered border-primary">
                                 <thead>
                                     <tr>
-                                        <th>Rol</th>
-                                        <th>Total</th>
+                                        <th class="table-success">Rol</th>
+                                        <th class="table-success">Total</th>
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    @foreach($usuariosPorRol as $rol)
-                                    <tr>
-                                        <td>{{ $rol->id_rol }}</td>
-                                        <td>{{ $rol->total }}</td>
+                                    @foreach ($Roles as $roles)
+                                    @php
+                                    // Encuentra el total de usuarios para el rol actual
+                                    $total = $usuariosPorRol->firstWhere('id_rol', $roles->id_rol)->total ?? 0;
+                                    @endphp
+                                    <tr class="table-danger">
+                                        <td>{{ $roles->nombreRol }}</td>
+                                        <td>{{ $total }}</td>
                                     </tr>
                                     @endforeach
                                 </tbody>
+
                             </table>
                         </div>
                     </div>
@@ -60,7 +65,7 @@
                     <div class="card">
                         <div class="card-header">Crecimiento de Usuarios por Mes</div>
                         <div class="card-body">
-                            <table class="table table-bordered">
+                            <table class="table table-bordered border-warning">
                                 <thead>
                                     <tr>
                                         <th>Año</th>

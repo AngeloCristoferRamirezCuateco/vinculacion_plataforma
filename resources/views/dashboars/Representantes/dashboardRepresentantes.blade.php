@@ -1,4 +1,5 @@
 @include ('share1.head')
+
 <body>
     <main class="main" id="top">
         <div class="container" data-layout="container">
@@ -13,10 +14,13 @@
             @include ('share1.nav')
             <div class="content">
                 @include ('share1.nav_profile')
-                <form class="row g-3 needs-validation" method="POST" action="#">
+                <form class="row g-3 needs-validation" method="POST" action="{{ route('representante.registerRepresentante') }}">
                     @csrf
+                    @if (isset($user))
+                    <h1>Registro de Usuarios, bienvenido {{ $user->nombreUsuario }}</h1>
+                    @else
                     <h1>Registro de Usuarios</h1>
-                    
+                    @endif
                     <div class="col-md-4">
                         <label class="form-label" for="nombreUsuario">Nombre</label>
                         <input class="form-control" id="nombreUsuario" name="nombreUsuario" type="text" required />
@@ -37,17 +41,15 @@
                         <label class="form-label" for="passwordUsuario">Password</label>
                         <input class="form-control" id="passwordUsuario" name="passwordUsuario" type="password" required />
                     </div>
-                    <!-- <div class="col-md-4">
-                        <label class="form-label" for="id_empresa">Institución</label>
-                        <select class="form-control" id="id_empresa" name="id_empresa" required>
-                        </select>   
-                    </div> -->
                     <div class="col-md-4">
                         <label class="form-label" for="id_rol">Rol del Usuario</label>
                         <select class="form-control" id="id_rol" name="id_rol" required>
-                            <option>Alumno</option>
-                            <option>Docente</option>
-                        </select>   
+                            @foreach ($Rol as $roles)
+                                @if ($roles->id_rol=== 1 || $roles->id_rol=== 2)
+                                    <option value="{{$roles->id_rol}}">{{ $roles->nombreRol }}</option>
+                                @endif
+                            @endforeach
+                        </select>
                     </div>
                     <div class="col-md-4">
                         <label class="form-label" for="telefonoUsuario">Teléfono</label>

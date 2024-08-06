@@ -53,7 +53,7 @@
             <div class="card-body p-4 p-sm-5">
               <div class="row flex-between-center mb-2">
                 <div class="col-auto">
-                  <h5>Log in</h5>
+                  <h5>Ingresar</h5>
                 </div>
               </div>
               @if ($errors->any())

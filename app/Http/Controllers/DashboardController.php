@@ -7,12 +7,14 @@ use Illuminate\Http\Request;
 use App\Models\Usuario;
 use App\Models\Empresa;
 use App\Models\UsuarioRol;
+use App\Models\Rol;
 use Carbon\Carbon;
 
 class DashboardController extends Controller
 {
     public function index()
     {
+        $Roles = Rol::all();
         // Contar usuarios y empresas
         $totalUsuarios = Usuario::count();
         $totalEmpresas = Empresa::count();
@@ -29,6 +31,6 @@ class DashboardController extends Controller
                          ->orderBy('month', 'asc')
                          ->get();
 
-        return view('dashboars.Administradores.data', compact('totalUsuarios', 'totalEmpresas', 'usuariosPorRol', 'usuariosPorMes'));
+        return view('dashboars.Administradores.data', compact('totalUsuarios', 'totalEmpresas', 'usuariosPorRol', 'usuariosPorMes','Roles'));
     }
 }
