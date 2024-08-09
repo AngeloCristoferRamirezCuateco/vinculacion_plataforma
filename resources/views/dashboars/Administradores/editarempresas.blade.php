@@ -25,45 +25,48 @@
         @include ('share.nav')
         <div class="content">
             @include ('share.nav_profile')
+            <div class="container mt-4 p-4" style="background-color: #fff; border-radius: 30px; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);">
+
             <form class="row g-3 needs-validation" novalidate="" method="POST" action="{{ route('empresas.update', $empresas->id_empresa) }}">
                 @csrf
                 @method('PUT')
-                <h1>Editar Empresa</h1>
-                <div class="col-md-6">
-                    <label class="form-label" for="nombreEmpresa">Nombre de la Empresa</label>
-                    <input class="form-control" id="nombreEmpresa" name="nombreEmpresa" type="text" value="{{ $empresas->nombreEmpresa }}" required="" />
+                <h1 class="text-center mb-3 fw-bold fs-4" style="color: inherit;">EDITAR EMPRESA</h1>
+                <div class="col-md-4">
+                    <label class="form-label fw-bold fs-8" for="nombreEmpresa">Nombre de la Empresa</label>
+                    <input class="form-control border-primary" style="border-radius: 50px;" id="nombreEmpresa" name="nombreEmpresa" type="text" value="{{ $empresas->nombreEmpresa }}" required="" />
                 </div>
-                <div class="col-md-6">
-                    <label class="form-label" for="tipoEmpresa">Tipo de Empresa</label>
-                    <input class="form-control" id="tipoEmpresa" name="tipoEmpresa" type="text" value="{{ $empresas->tipoEmpresa }}" required="" />
+                <div class="col-md-4">
+                    <label class="form-label fw-bold fs-8" for="tipoEmpresa">Tipo de Empresa</label>
+                    <input class="form-control border-primary" style="border-radius: 50px;" id="tipoEmpresa" name="tipoEmpresa" type="text" value="{{ $empresas->tipoEmpresa }}" required="" />
                 </div>
-                <div class="col-md-6">
-                    <label class="form-label" for="areaEmpresa">Área de la Empresa</label>
-                    <input class="form-control" id="areaEmpresa" name="areaEmpresa" type="text" value="{{ $empresas->areaEmpresa }}" required="" />
+                <div class="col-md-4">
+                    <label class="form-label fw-bold fs-8" for="areaEmpresa">Área de la Empresa</label>
+                    <input class="form-control border-primary" style="border-radius: 50px;" id="areaEmpresa" name="areaEmpresa" type="text" value="{{ $empresas->areaEmpresa }}" required="" />
                 </div>
-                <div class="col-md-6">
-                    <label class="form-label" for="direccionEmpresa">Dirección</label>
-                    <input class="form-control" id="direccionEmpresa" name="direccionEmpresa" type="text" value="{{ $empresas->direccionEmpresa }}" required="" />
+                <div class="col-md-4">
+                    <label class="form-label fw-bold fs-8" for="direccionEmpresa">Dirección</label>
+                    <input class="form-control border-primary" style="border-radius: 50px;" id="direccionEmpresa" name="direccionEmpresa" type="text" value="{{ $empresas->direccionEmpresa }}" required="" />
                 </div>
-                <div class="col-md-6">
-                    <label class="form-label" for="correoEmpresa">Correo</label>
-                    <input class="form-control" id="correoEmpresa" name="correoEmpresa" type="email" value="{{ $empresas->correoEmpresa }}" aria-describedby="inputGroupPrepend" required="" />
+                <div class="col-md-4">
+                    <label class="form-label fw-bold fs-8" for="correoEmpresa">Correo</label>
+                    <input class="form-control border-primary" style="border-radius: 50px;" id="correoEmpresa" name="correoEmpresa" type="email" value="{{ $empresas->correoEmpresa }}" aria-describedby="inputGroupPrepend" required="" />
                 </div>
-                <div class="col-md-6">
-                    <label class="form-label" for="rfcEmpresa">RFC</label>
-                    <input class="form-control" id="rfcEmpresa" name="rfcEmpresa" type="text" value="{{ $empresas->rfcEmpresa }}" required="" />
+                <div class="col-md-4">
+                    <label class="form-label fw-bold fs-8" for="rfcEmpresa">RFC</label>
+                    <input class="form-control border-primary" style="border-radius: 50px;" id="rfcEmpresa" name="rfcEmpresa" type="text" value="{{ $empresas->rfcEmpresa }}" required="" />
                 </div>
-                <div class="col-md-6">
-                    <label class="form-label" for="evaluacionEmpresa">Calificación</label>
-                    <input class="form-control" id="evaluacionEmpresa" name="evaluacionEmpresa" type="text" value="{{ $empresas->evaluacionEmpresa }}" required="" />
-                </div>
-                <div class="col-6">
-                    <button class="btn btn-primary col-md-12" onclick="window.location.href='{{redirect()->back()}}'">Volver</button>
+                <div class="col-md-4 offset-md-4">
+                    <label class="form-label fw-bold fs-8" for="evaluacionEmpresa">Calificación</label>
+                    <input class="form-control border-primary" style="border-radius: 50px;" id="evaluacionEmpresa" name="evaluacionEmpresa" type="text" value="{{ $empresas->evaluacionEmpresa }}" required="" />
                 </div>
                 <div class="col-6">
-                    <button class="btn btn-success col-md-12" type="submit">Actualizar</button>
+                    <button class="btn btn-primary col-md-12" style="border-radius: 50px;" onclick="window.location.href='{{redirect()->back()}}'">Volver</button>
+                </div>
+                <div class="col-6">
+                    <button class="btn btn-success col-md-12" style="border-radius: 50px;" type="submit">Actualizar</button>
                 </div>
             </form>
+            </div>
             @include ('share.footer')
             @include ('share.btn-config')
         </div>

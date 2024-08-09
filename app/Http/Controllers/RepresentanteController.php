@@ -9,7 +9,10 @@ use Illuminate\Support\Facades\DB;
 use App\Models\Usuario;
 use App\Models\UsuarioRol;
 use App\Models\Empresa;
+use App\Models\AplicacionVacante;
 use App\Models\Rol;
+use App\Models\Proyecto;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Storage;
 
 
@@ -32,6 +35,10 @@ class RepresentanteController extends Controller
         ]);
     }
 
+
+
+
+
     public function panelConvenios()
     {
         $userId = Auth::id();
@@ -50,13 +57,84 @@ class RepresentanteController extends Controller
     {
         $userId = Auth::id();
         $user = Auth::user();
-        Log::info('Id de usuario ->' . $userId);
-        Log::info('Usuario -> ' . json_encode($user));
-        return view('dashboars.Representantes.crearVacante', [
+        $empresas = Empresa::all();
+        $empresaId = $user->id_empresa;
+        $proyectos = Proyecto::where('empresa_pertenencia', $empresaId)->get();
+        return view('dashboars.Representantes.crearVacantes', [
             'userId' => $userId,
             'user' => $user,
+            'proyectos' => $proyectos,
+            'empresas' => $empresas
         ]);
     }
+
+    public function panelDocente()
+    {
+        // Obtener el ID del usuario autenticado
+        $userId = Auth::id();
+
+        // Obtener el usuario autenticado
+        $user = Auth::user();
+
+        // Obtener todas las empresas
+        $empresas = Empresa::all();
+
+        // Obtener los usuarios que tienen el rol de docente
+        $docenteRoleId = 2; // Ajusta esto si el ID del rol de docente es diferente
+        $docentes = Usuario::whereHas('roles', function ($query) use ($docenteRoleId) {
+            $query->where('id_rol', $docenteRoleId);
+        })->where('id_empresa', $user->id_empresa)->get();
+
+        // Obtener el ID de la empresa del usuario autenticado
+        $empresaId = $user->id_empresa;
+
+        // Obtener los proyectos que pertenezcan a la empresa del usuario
+        $proyectos = Proyecto::where('empresa_pertenencia', $empresaId)->get();
+
+        // Pasar los datos a la vista
+        return view('dashboars.Representantes.crearVacantes', [
+            'userId' => $userId,
+            'user' => $user,
+            'proyectos' => $proyectos,
+            'empresas' => $empresas,
+            'docentes' => $docentes
+        ]);
+    }
+
+    public function panelDocentess()
+    {
+        // Obtener el ID del usuario autenticado
+        $userId = Auth::id();
+
+        // Obtener el usuario autenticado
+        $user = Auth::user();
+
+        // Obtener todas las empresas
+        $usuarioempresas = Auth::user();
+
+        // Obtener los usuarios que tienen el rol de docente
+        $docenteRoleId = 2; // Ajusta esto si el ID del rol de docente es diferente
+        $docentes = Usuario::whereHas('roles', function ($query) use ($docenteRoleId) {
+            $query->where('id_rol', $docenteRoleId);
+        })->where('id_empresa', $user->id_empresa)->get();
+
+        // Obtener el ID de la empresa del usuario autenticado
+        $empresaId = $user->id_empresa;
+
+        // Obtener los proyectos que pertenezcan a la empresa del usuario
+        $proyectos = Proyecto::where('empresa_pertenencia', $empresaId)->get();
+
+        // Pasar los datos a la vista
+        return view('dashboars.Representantes.crearVacantes', [
+            'userId' => $userId,
+            'user' => $user,
+            'proyectos' => $proyectos,
+            'empresas' => $usuarioempresas,
+            'docentes' => $docentes
+        ]);
+    }
+
+    // 
 
     public function panelListaAlumnos(Request $request)
     {
@@ -272,11 +350,148 @@ class RepresentanteController extends Controller
         return view('dashboars.Representantes.Perfil', compact('user', 'userId', 'imageResponse', 'curriculumResponse', 'coverImageResponse'));
     }
 
-    public function Prueva(){
+    public function Prueva()
+    {
         return view('dashboars.Representantes.Prueva');
     }
 
-    public function Prueva2(){
+    public function Prueva2()
+    {
         return view('dashboars.Representantes.Prueba2');
+    }
+
+    public function lista()
+    {
+        // Obtener el usuario autenticado
+        $usuario = Auth::user();
+
+        // Filtrar los proyectos que pertenecen a la misma empresa que el usuario autenticado
+        $proyectos = Proyecto::where('empresa_pertenencia', $usuario->id_empresa)->get();
+
+        // Pasar los proyectos a la vista
+        return view('dashboars\Representantes\registrosdeproyectos', compact('proyectos'));
+    }
+
+    public function asignardocentesrep()
+    {
+        // Obtener el ID de la empresa del usuario autenticado
+        $empresaId = Auth::user()->id_empresa;
+
+        // ID del rol de docente
+        $docenteRoleId = 2;
+
+        // ID del rol de alumno
+        $alumnoRoleId = 1;
+
+        // Obtener los usuarios de la empresa
+        $usuarios = Usuario::where('id_empresa', $empresaId)->get();
+
+        // Obtener IDs de los docentes
+        $docenteUserIds = UsuarioRol::where('id_rol', $docenteRoleId)
+            ->pluck('id_usuario');
+
+        // Filtrar los docentes entre los usuarios de la empresa
+        $docentes = $usuarios->whereIn('id_usuario', $docenteUserIds);
+
+        // Obtener IDs de los alumnos
+        $alumnoUserIds = UsuarioRol::where('id_rol', $alumnoRoleId)
+            ->pluck('id_usuario');
+
+        // Filtrar los alumnos entre los usuarios de la empresa
+        $alumnos = $usuarios->whereIn('id_usuario', $alumnoUserIds);
+
+        // Si necesitas obtener los proyectos en los que los alumnos están trabajando, haz una consulta adicional
+        // Esto depende de cómo estén relacionadas las tablas de proyectos y alumnos
+
+        return view('dashboars.Representantes.asignarDocente', compact('docentes', 'alumnos'));
+    }
+
+
+
+
+    public function verSolicitudes()
+    {
+        // Obtener el ID de la empresa del usuario autenticado
+        $id_empresa = Auth::user()->id_empresa;
+
+        // Obtener las solicitudes de vacantes asociadas a la empresa del representante
+        $solicitudes = AplicacionVacante::with('usuario', 'vacante')
+            ->whereHas('vacante', function ($query) use ($id_empresa) {
+                $query->where('id_empresa', $id_empresa);
+            })
+            ->get();
+
+        // Retornar la vista con las solicitudes
+        return view('dashboars.Representantes.solicitudesUsuarios', compact('solicitudes'));
+    }
+
+    public function aceptarSolicitud($id)
+    {
+        $solicitud = AplicacionVacante::findOrFail($id);
+        $solicitud->estadoSolicitud = 'Aceptada';
+        $solicitud->save();
+
+        return redirect()->back()->with('success', 'Solicitud aceptada correctamente.');
+    }
+
+    public function rechazarSolicitud(Request $request, $id)
+    {
+        $solicitud = AplicacionVacante::findOrFail($id);
+        $solicitud->estadoSolicitud = 'Rechazada';
+        $solicitud->save();
+
+        // Otras acciones como registrar el motivo de rechazo, si es necesario
+        return redirect()->back()->with('success', 'Solicitud rechazada correctamente.');
+    }
+
+    public function guardarAsignacion(Request $request)
+    {
+        // Log para verificar los datos recibidos
+        Log::info('Datos recibidos para la asignación:', ['request_data' => $request->all()]);
+
+        // Validación de los datos
+        try {
+            $request->validate([
+                'docente_id' => 'required|exists:usuarios,id_usuario',
+                'alumnos_ids' => 'required|array',
+                'alumnos_ids.*' => 'exists:usuarios,id_usuario',
+            ]);
+
+            // Log para confirmar que la validación se realizó correctamente
+            Log::info('Validación exitosa:', ['validated_data' => $request->all()]);
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            // Log para capturar cualquier error de validación
+            Log::error('Error de validación:', ['errors' => $e->errors()]);
+            return redirect()->back()->withErrors($e->errors())->withInput();
+        }
+
+        $docenteId = $request->input('docente_id');
+        $alumnosIds = $request->input('alumnos_ids');
+
+        // Log para verificar los datos después de la validación
+        Log::info('Datos después de la validación:', ['docente_id' => $docenteId, 'alumnos_ids' => $alumnosIds]);
+
+        // Aquí se asocia el docente con los alumnos seleccionados
+        try {
+            foreach ($alumnosIds as $alumnoId) {
+                DB::table('docente_alumno')->insert([
+                    'docente_id' => $docenteId,
+                    'alumno_id' => $alumnoId,
+                    'created_at' => now(),
+                    'updated_at' => now(),
+                ]);
+                // Log para confirmar la inserción de cada relación
+                Log::info('Relación guardada:', ['docente_id' => $docenteId, 'alumno_id' => $alumnoId]);
+            }
+
+            // Log para confirmar que todas las inserciones se realizaron correctamente
+            Log::info('Todas las asignaciones fueron guardadas correctamente.');
+        } catch (\Exception $e) {
+            // Log para capturar cualquier error durante la inserción
+            Log::error('Error al guardar la asignación:', ['exception' => $e->getMessage()]);
+            return redirect()->back()->with('error', 'Hubo un problema al guardar la asignación.')->withInput();
+        }
+
+        return redirect()->back()->with('success', 'Asignación guardada correctamente.');
     }
 }

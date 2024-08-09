@@ -19,20 +19,7 @@
      <div class="collapse navbar-collapse" id="navbarVerticalCollapse">
          <div class="navbar-vertical-content scrollbar">
              <ul class="navbar-nav flex-column mb-3" id="navbarVerticalNav">
-                 <li class="nav-item">
-                     <a class="nav-link dropdown-indicator" href="#dashboard" role="button" data-bs-toggle="collapse" aria-expanded="true" aria-controls="dashboard">
-                         <div class="d-flex align-items-center"><span class="nav-link-icon"><span class="fas fa-chart-pie"></span></span><span class="nav-link-text ps-1">Dashboard</span>
-                         </div>
-                     </a>
-                     <ul class="nav collapse show" id="dashboard">
-                         <li class="nav-item"><a class="nav-link active" href="../dashboard/management.php">
-                                 <div class="d-flex align-items-center"><span class="nav-link-text ps-1">Management</span>
-                                 </div>
-                             </a>
-
-                         </li>
-                     </ul>
-                 </li>
+                
                  <li class="nav-item">
                      <div class="row navbar-vertical-label-wrapper mt-3 mb-2">
                          <div class="col-auto navbar-vertical-label">Panel de control
@@ -41,18 +28,25 @@
                              <hr class="mb-0 navbar-vertical-divider" />
                          </div>
                      </div>
-                     <a class="nav-link" href="../app/tables_user.php" role="button">
-                         <div class="d-flex align-items-center"><span class="nav-link-icon"><span class="fas fa-users "></span></span><span class="nav-link-text ps-1">Gestionar Usuarios</span>
+                     <a class="nav-link" href="{{route('docente.asignaciondocentealumno')}}" role="button">
+                         <div class="d-flex align-items-center"><span class="nav-link-icon"><span class="fas fa-users "></span></span><span class="nav-link-text ps-1">Alumnos</span>
                          </div>
                      </a>
-                     <a class="nav-link" href="#" role="button">
-                         <div class="d-flex align-items-center"><span class="nav-link-icon"><span class="fas fa-users "></span></span><span class="nav-link-text ps-1">Registrar Empresa</span>
-                         </div>
-                     </a>
-                     <a class="nav-link" href="../app/chat.php" role="button">
-                         <div class="d-flex align-items-center"><span class="nav-link-icon"><span class="fas fa-comments"></span></span><span class="nav-link-text ps-1">Chat</span>
-                         </div>
-                     </a>
+                     <div class="row navbar-vertical-label-wrapper mt-3 mb-2">
+                        <div class="col-auto navbar-vertical-label">Configuracion
+                        </div>
+                        <div class="col ps-0">
+                            <hr class="mb-0 navbar-vertical-divider" />
+                        </div>
+                    </div>
+                    <a class="nav-link" href="{{route('docente.perfil')}}" role="button">
+                        <div class="d-flex align-items-center"><span class="nav-link-icon"><span class="bi-person-fill "></span></span><span class="nav-link-text ps-1">Perfil</span>
+                        </div>
+                    </a>
+                    <a class="nav-link" href="{{route('app.logout')}}" role="button">
+                        <div class="d-flex align-items-center"><span class="nav-link-icon"><span class="bi-box-arrow-left "></span></span><span class="nav-link-text ps-1">Cerrar Sesion</span>
+                        </div>
+                    </a>
                  </li>
              </ul>
          </div>

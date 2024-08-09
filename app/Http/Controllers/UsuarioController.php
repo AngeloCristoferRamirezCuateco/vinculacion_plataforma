@@ -79,7 +79,22 @@ class UsuarioController extends Controller
         $usuarios = Usuario::all();
         return response()->json($usuarios, 200);
     }
-    //Buscar usuarios
+
+    public function buscarUsuarios(Request $request)
+    {
+        $query = $request->input('query');
+        $usuarios = Usuario::query()
+            ->where('nombreUsuario', 'LIKE', '%' . $query . '%')
+            ->orWhere('apellidoPaterno', 'LIKE', '%' . $query . '%')
+            ->orWhere('apellidoMaterno', 'LIKE', '%' . $query . '%')
+            ->orWhere('correoUsuario', 'LIKE', '%' . $query . '%')
+            ->orWhere('telefonoUsuario', 'LIKE', '%' . $query . '%')
+            ->get();
+
+        return view('dashboars.Administradores.tablasalumnos', compact('usuarios'));
+    }
+//Buscar usuarios
+   
     public function show($id)
     {
         $usuario = Usuario::findOrFail($id);
@@ -300,4 +315,7 @@ class UsuarioController extends Controller
             return redirect()->back()->with('error', 'Usuario no encontrado');
         }
     }
+
+    //Funcion de busqueda de Usuarios para Administradores 
+    
 }

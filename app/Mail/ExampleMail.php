@@ -25,4 +25,5 @@ class ExampleMail extends Mailable
         return $this->view('emails.example')
                     ->with(['name' => $this->name]);
     }
+    
 }

@@ -5,7 +5,8 @@
         @include('share1.nav')
         <div class="content">
             @include('share1.nav_profile')
-            <h1>Lista de alumnos</h1>
+            <div class="container mt-4 p-4" style="background-color: #fff; border-radius: 30px; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);">
+            <h1 class="text-center mb-3 fw-bold fs-4" style="color: inherit;">LISTA DE ALUMNOS</h1>
             <div class="table-responsive">
                 <table class="table align-middle">
                     <thead>
@@ -43,7 +44,7 @@
                     </tbody>
                 </table>
             </div>
-
+            </div>
             @include('share1.footer')
         </div>
         @include('share1.btn-config')

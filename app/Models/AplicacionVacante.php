@@ -18,9 +18,12 @@ class AplicacionVacante extends Model
     protected $fillable = [
         'id_usuario',
         'id_vacante',
+        'curriculumUsuario',
+        'fechaAplicacion',
+        'estadoSolicitud'
     ];
 
-    // Relación: Una aplicación de vacante pertenece a un usuario
+    
     public function usuario()
     {
         return $this->belongsTo(Usuario::class, 'id_usuario', 'id_usuario');

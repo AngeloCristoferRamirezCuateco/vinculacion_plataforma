@@ -58,74 +58,106 @@ Route::post('/dashboard/register', [UsuarioController::class, 'registerRepresent
 Route::get('/Perfil/Representante',[RepresentanteController::class,'perfilUsuario'])->middleware('auth')->name('representante.perfil');
 Route::get('/Prueba',[RepresentanteController::class,'Prueva'])->middleware('auth')->name('prueba');
 Route::get('/Prueba/vista2',[RepresentanteController::class,'Prueva2'])->middleware('auth')->name('ruta.prueba2');
+Route::get('/Proyectos/lista',[RepresentanteController::class,'lista'])->middleware('auth')->name('proyectos.lista');
+Route::get('/AsignarDocente',[RepresentanteController::class,'asignardocentesrep'])->middleware('auth')->name('representante.asignar-docente');
+Route::post('/AsignandoDocente',[RepresentanteController::class,'guardarAsignacion'])->middleware('auth')->name('representante.alumnodocente');
+Route::get('/solicitudes/vacantes', [RepresentanteController::class, 'verSolicitudes'])->name('vacantes.solicitudes');
+
+Route::put('/solicitudes/{id}/aceptar', [RepresentanteController::class, 'aceptarSolicitud'])->name('solicitudes.aceptar');
+Route::delete('/solicitudes/{id}/rechazar', [RepresentanteController::class, 'rechazarSolicitud'])->name('solicitudes.rechazar');
+
+Route::get('/lista/vacantes',[AplicacionVacanteController::class,'index'])->middleware('auth')->name('lista.vacantes');
+Route::get('/Asignacion/alumnos-docentes',[DocenteController::class,'mostrarAlumnosDelDocente'])->middleware('auth')->name('docente.asignaciondocentealumno');
 ################################Rutas-para-docentes##########################################################
 // Route::get('/panelDocente',function(){
 //     return view('dashboars\Docentes\dashboardDocentes');
 // })->name('docente.panelInicio');
+Route::get('/Perfil/Docente',[DocenteController::class,'perfilUsuario'])->middleware('auth')->name('docente.perfil');
 Route::get('/dashboard/inicio/Docente',[DocenteController::class,'dashboardDocente'])->middleware('auth')->name('docente.panelInicio');
 ################################Rutas-para-alumnos##########################################################
 // Route::get('/panelAlumno',function(){
 //     return view('dashboars\Alumnos\dashboardAlumnos');
 // })->name('alumno.panelInicio');
+Route::get('/Perfil/Alumno',[AlumnoController::class,'perfilUsuarioAlumno'])->middleware('auth')->name('alumno.perfil');
 Route::get('/dashboard/inicio/Alumno',[AlumnoController::class,'inicioAlumno'])->middleware('auth')->name('alumno.panelInicio');
+Route::get('/dashboard/Alumno-vacante',[AlumnoController::class,'alumnovacante'])->middleware('auth')->name('alumno.vacante');
+Route::get('/alumnos/vacantes',[VacanteController::class,'index'])->middleware('auth')->name('alumnos.vacantes');
+Route::get('/alumno/solicitudes',[AlumnoController::class,'solicitudesenviadas'])->middleware('auth')->name('alumno.solicitudes');
 ##############################################################################################################
-Route::get('/empresas', [EmpresaController::class, 'index'])->name('empresas.index');
-Route::get('/empresas/create', [EmpresaController::class, 'create'])->name('empresas.create');
-Route::post('/empresas', [EmpresaController::class, 'register'])->name('empresas.register');
-Route::get('/empresas/{id}/edit', [EmpresaController::class, 'edit'])->name('empresas.edit');
-Route::put('/empresas/{id}', [EmpresaController::class, 'update'])->name('empresas.update');
-Route::delete('/empresas/{id}', [EmpresaController::class, 'destroy'])->name('empresas.destroy');
+Route::get('/empresas', [EmpresaController::class, 'index'])->middleware('auth')->name('empresas.index');
+Route::get('/empresas/create', [EmpresaController::class, 'create'])->middleware('auth')->name('empresas.create');
+Route::post('/empresas', [EmpresaController::class, 'register'])->middleware('auth')->name('empresas.register');
+Route::get('/empresas/{id}/edit', [EmpresaController::class, 'edit'])->middleware('auth')->name('empresas.edit');
+Route::put('/empresas/{id}', [EmpresaController::class, 'update'])->middleware('auth')->name('empresas.update');
+Route::delete('/empresas/{id}', [EmpresaController::class, 'destroy'])->middleware('auth')->name('empresas.destroy');
 
-Route::get('/usuarios', [UsuarioController::class, 'index'])->name('usuarios.index');
+Route::get('/usuarios', [UsuarioController::class, 'index'])->middleware('auth')->name('usuarios.index');
 //Route::get('/usuarios/create', [UsuarioController::class, 'create'])->name('usuarios.create');
-Route::post('/usuarios', [UsuarioController::class, 'register'])->name('usuarios.register');
-Route::get('/usuarios/{id}', [UsuarioController::class, 'show'])->name('usuarios.show');
+Route::post('/usuarios', [UsuarioController::class, 'register'])->middleware('auth')->name('usuarios.register');
+Route::get('/usuarios/{id}', [UsuarioController::class, 'show'])->middleware('auth')->name('usuarios.show');
 //Route::get('/usuarios/{id}/edit', [UsuarioController::class, 'edit'])->name('usuarios.edit');
-Route::put('/usuarios/{id}', [UsuarioController::class, 'update'])->name('usuarios.update');
-Route::delete('/usuarios/{id}', [UsuarioController::class, 'destroy'])->name('usuarios.destroy');
+Route::put('/usuarios/{id}', [UsuarioController::class, 'update'])->middleware('auth')->name('usuarios.update');
+Route::delete('/usuarios/{id}', [UsuarioController::class, 'destroy'])->middleware('auth')->name('usuarios.destroy');
 
-Route::get('/convenios', [ConvenioController::class, 'index'])->name('convenios.index');
-Route::post('/convenios', [ConvenioController::class, 'store'])->middleware('auth')->name('convenios.store'); //Importante//
+Route::get('/Solicitudes/Recibidas', [ConvenioController::class, 'index'])->middleware('auth')->name('convenios.index');
+Route::get('/Solicitudes/Enviadas', [ConvenioController::class, 'SolcitudesEnviadas'])->middleware('auth')->name('convenios.SolicitudesEnviadas');
+Route::post('/convenios', [ConvenioController::class, 'store'])->middleware('auth')->middleware('auth')->name('convenios.store'); //Importante//
 //Route::get('/convenios/{id}', [ConvenioController::class, 'show'])->name('convenios.show');
-Route::put('/convenios/{id}', [ConvenioController::class, 'update'])->name('convenios.update');
-Route::delete('/convenios/{id_solicitud}', [ConvenioController::class, 'destroy'])->name('convenios.destroy'); //Importante//
+Route::put('/convenios/{id}', [ConvenioController::class, 'update'])->middleware('auth')->name('convenios.update');
+Route::delete('/convenios/{id_solicitud}', [ConvenioController::class, 'destroy'])->middleware('auth')->name('convenios.destroy');
+Route::delete('/bann/{id}', [ConvenioController::class, 'deleteByRemitente'])->middleware('auth')->name('convenios.banear');
 
-Route::get('/proyectos', [ProyectoController::class, 'index'])->name('proyectos.index');
-Route::post('/proyectos', [ProyectoController::class, 'store'])->name('proyectos.store');
-Route::get('/proyectos/{id}', [ProyectoController::class, 'show'])->name('proyectos.show');
-Route::put('/proyectos/{id}', [ProyectoController::class, 'update'])->name('proyectos.update');
-Route::delete('/proyectos/{id}', [ProyectoController::class, 'destroy'])->name('proyectos.destroy');
+Route::get('/proyectos', [ProyectoController::class, 'index'])->middleware('auth')->name('proyectos.index');
+Route::post('/proyectos', [ProyectoController::class, 'store'])->middleware('auth')->name('proyectos.store');
+Route::get('/proyectos/{id}', [ProyectoController::class, 'show'])->middleware('auth')->name('proyectos.show');
+Route::put('/proyectos/{id}', [ProyectoController::class, 'update'])->middleware('auth')->name('proyectos.update');
+Route::delete('/proyectos/{id}', [ProyectoController::class, 'destroy'])->middleware('auth')->name('proyectos.destroy');
 
-Route::get('/vacantes', [VacanteController::class, 'index'])->name('vacantes.index');
-Route::post('/vacantes', [VacanteController::class, 'store'])->name('vacantes.store');
-Route::get('/vacantes/{id}', [VacanteController::class, 'show'])->name('vacantes.show');
-Route::put('/vacantes/{id}', [VacanteController::class, 'update'])->name('vacantes.update');
-Route::delete('/vacantes/{id}', [VacanteController::class, 'destroy'])->name('vacantes.destroy');
+Route::get('/vacantes', [VacanteController::class, 'index'])->middleware('auth')->name('vacantes.index');
+Route::post('/vacantes', [VacanteController::class, 'store'])->middleware('auth')->name('vacantes.store');
+Route::get('/vacantes/{id}', [VacanteController::class, 'show'])->middleware('auth')->name('vacantes.show');
+Route::put('/vacantes/{id}', [VacanteController::class, 'update'])->middleware('auth')->name('vacantes.update');
+Route::delete('/vacantes/{id}', [VacanteController::class, 'destroy'])->middleware('auth')->name('vacantes.destroy');
+Route::get('/vacantes-edit/{id}', [VacanteController::class, 'edit'])->middleware('auth')->name('vacantes.edit');
 
-Route::get('/aplicaciones', [AplicacionVacanteController::class, 'index'])->name('aplicaciones.index');
-Route::post('/aplicaciones', [AplicacionVacanteController::class, 'store'])->name('aplicaciones.store');
-Route::get('/aplicaciones/{id}', [AplicacionVacanteController::class, 'show'])->name('aplicaciones.show');
-Route::put('/aplicaciones/{id}', [AplicacionVacanteController::class, 'update'])->name('aplicaciones.update');
-Route::delete('/aplicaciones/{id}', [AplicacionVacanteController::class, 'destroy'])->name('aplicaciones.destroy');
+Route::get('/aplicaciones', [AplicacionVacanteController::class, 'index'])->middleware('auth')->name('aplicaciones.index');
+Route::post('/aplicaciones', [AplicacionVacanteController::class, 'store'])->middleware('auth')->name('aplicaciones.store');
+Route::get('/aplicaciones/{id}', [AplicacionVacanteController::class, 'show'])->middleware('auth')->name('aplicaciones.show');
+Route::put('/aplicaciones/{id}', [AplicacionVacanteController::class, 'update'])->middleware('auth')->name('aplicaciones.update');
+Route::delete('/aplicaciones/{id}', [AplicacionVacanteController::class, 'destroy'])->middleware('auth')->name('aplicaciones.destroy');
 
-Route::get('/roles', [RolController::class, 'index'])->name('roles.index');
-Route::post('/roles', [RolController::class, 'store'])->name('roles.store');
-Route::get('/roles/{id}', [RolController::class, 'show'])->name('roles.show');
-Route::put('/roles/{id}', [RolController::class, 'update'])->name('roles.update');
-Route::delete('/roles/{id}', [RolController::class, 'destroy'])->name('roles.destroy');
+Route::get('/roles', [RolController::class, 'index'])->middleware('auth')->name('roles.index');
+Route::post('/roles', [RolController::class, 'store'])->middleware('auth')->name('roles.store');
+Route::get('/roles/{id}', [RolController::class, 'show'])->middleware('auth')->name('roles.show');
+Route::put('/roles/{id}', [RolController::class, 'update'])->middleware('auth')->name('roles.update');
+Route::delete('/roles/{id}', [RolController::class, 'destroy'])->middleware('auth')->name('roles.destroy');
 
-Route::get('/usuario-roles', [UsuarioRolController::class, 'index'])->name('usuarioRoles.index');
-Route::post('/usuario-roles', [UsuarioRolController::class, 'store'])->name('usuarioRoles.store');
-Route::get('/usuario-roles/{id}', [UsuarioRolController::class, 'show'])->name('usuarioRoles.show');
-Route::put('/usuario-roles/{id}', [UsuarioRolController::class, 'update'])->name('usuarioRoles.update');
-Route::delete('/usuario-roles/{id}', [UsuarioRolController::class, 'destroy'])->name('usuarioRoles.destroy');
+Route::get('/usuario-roles', [UsuarioRolController::class, 'index'])->middleware('auth')->name('usuarioRoles.index');
+Route::post('/usuario-roles', [UsuarioRolController::class, 'store'])->middleware('auth')->name('usuarioRoles.store');
+Route::get('/usuario-roles/{id}', [UsuarioRolController::class, 'show'])->middleware('auth')->name('usuarioRoles.show');
+Route::put('/usuario-roles/{id}', [UsuarioRolController::class, 'update'])->middleware('auth')->name('usuarioRoles.update');
+Route::delete('/usuario-roles/{id}', [UsuarioRolController::class, 'destroy'])->middleware('auth')->name('usuarioRoles.destroy');
 
 Route::post('/login', [login::class, 'loginUser'])->name('login');
 
-Route::get('/logout', [UsuarioController::class, 'logoutUser'])->name('app.logout');
+Route::get('/logout', [UsuarioController::class, 'logoutUser'])->middleware('auth')->name('app.logout');
 
-Route::get('/convenios/gestion', [ConvenioController::class, 'gestionConvenios'])->name('representante.gestion');
+Route::get('/convenios/gestion', [ConvenioController::class, 'gestionConvenios'])->middleware('auth')->name('representante.gestion');
 
-Route::post('/solicitudes/{id}/aceptar', [ConvenioController::class, 'aceptarSolicitud'])->name('solicitudes.aceptar');
-Route::post('/solicitudes/{id}/rechazar', [ConvenioController::class, 'rechazarSolicitud'])->name('solicitudes.rechazar');
-Route::delete('/solicitudes/{id}', [ConvenioController::class, 'eliminarSolicitud'])->name('solicitudes.destroy');
+Route::post('/solicitudes/{id}/aceptar', [ConvenioController::class, 'aceptarSolicitud'])->middleware('auth')->name('solicitudes.aceptar');
+Route::post('/solicitudes/{id}/rechazar', [ConvenioController::class, 'rechazarSolicitud'])->middleware('auth')->name('solicitudes.rechazar');
+Route::delete('/solicitudes/{id}', [ConvenioController::class, 'eliminarSolicitud'])->middleware('auth')->name('solicitudes.destroy');
+
+Route::get('/buscar-empresa', [EmpresaController::class, 'buscarEmpresa'])->middleware('auth')->name('admin.busquedasEmpresas');
+Route::get('/buscar-usuarios', [UsuarioController::class, 'buscarUsuarios'])->middleware('auth')->name('admin.busquedas');
+Route::get('/buscar-alumno', [RepresentanteController::class, 'buscarAlumno'])->middleware('auth')->name('repre.busqueda-alumno');
+
+Route::post('/crear-proyecto', [ProyectoController::class,'store'])->middleware('auth')->name('proyecto.create');
+
+
+Route::get('/crear-proyect', [ProyectoController::class,'proyectoscrear'])->middleware('auth')->name('proyect.create');
+
+Route::get('/seleccionar-Docente', [RepresentanteController::class,'panelDocentess'])->middleware('auth')->name('seleccion.Docente');
+
+Route::delete('/Proyectos-destroy/{id}',[ProyectoController::class,'destroy'])->middleware('auth')->name('proyecto.destroy');
+

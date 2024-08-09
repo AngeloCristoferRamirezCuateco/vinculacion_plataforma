@@ -114,8 +114,19 @@ class EmpresaController extends Controller
     }
 }
 
-    
+public function buscarEmpresa(Request $request)
+{
+    $query = $request->input('query');
+    $empresas = Empresa::query()
+        ->where('nombreEmpresa', 'LIKE', '%' . $query . '%')
+        ->orWhere('tipoEmpresa', 'LIKE', '%' . $query . '%')
+        ->orWhere('areaEmpresa', 'LIKE', '%' . $query . '%')
+        ->orWhere('correoEmpresa', 'LIKE', '%' . $query . '%')
+        ->orWhere('rfcEmpresa', 'LIKE', '%' . $query . '%')
+        ->get();
 
+    return view('dashboars.Administradores.tablasempresas', compact('empresas'));
+}
 
     //Método para mostrar todas las empresas
     public function index()

@@ -1,8 +1,10 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     @include('share1.head')
 </head>
+
 <body>
     <main class="main" id="top">
         <div class="container" data-layout="container">
@@ -17,7 +19,14 @@
             @include('share1.nav')
             <div class="content">
                 @include('share1.nav_profile')
-                <h1>Solicitudes</h1>
+                <div class="container mt-4 p-4" style="background-color: #fff; border-radius: 30px; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);">
+
+                @if ($solicitudes->isEmpty())
+                <h1 class="text-center mb-3 fw-bold fs-4" style="color: inherit;">SIN SOLICITUDES</h1>
+                @else
+                <h1 class="text-center mb-3 fw-bold fs-4" style="color: inherit;">SOLICITUDES RECIBIDAS</h1>
+                @endif
+
                 <div class="table-responsive">
                     <table class="table table-bordered">
                         <thead>
@@ -29,9 +38,10 @@
                             </tr>
                         </thead>
                         <tbody id="documentTableBody">
+
                             @foreach($solicitudes as $solicitud)
                             <tr>
-                                <td>{{ $solicitud->emisor ? $solicitud->emisor->nombreUsuario . ' ' . $solicitud->emisor->apellidoPaterno . ' ' . $solicitud->emisor->apellidoMaterno : 'N/A' }}</td>
+                                <td>{{ $solicitud->emisor->empresa->nombreEmpresa }}</td>
                                 <td>
                                     @if($solicitud->documento_pdf)
                                     <a href="{{ asset('storage/' . $solicitud->documento_pdf) }}" target="_blank">{{ $solicitud->documento_pdf }}</a>
@@ -41,15 +51,15 @@
                                 </td>
                                 <td>{{ $solicitud->tipoSolicitud }}</td>
                                 <td>
-                                    <form action="#" method="POST" style="display:inline;">
+                                    <form action="{{route('solicitudes.aceptar', ['id'=>$solicitud->id_solicitud])}}" method="POST" style="display:inline;">
                                         @csrf
                                         <button type="submit" class="btn btn-success btn-sm">Aceptar</button>
                                     </form>
-                                    <form action="#" method="POST" style="display:inline;">
+                                    <form action="{{route('solicitudes.rechazar',['id'=>$solicitud->id_solicitud])}}" method="POST" style="display:inline;">
                                         @csrf
                                         <button type="submit" class="btn btn-warning btn-sm">Rechazar</button>
                                     </form>
-                                    <form action="#" method="POST" style="display:inline;">
+                                    <form action="{{route('convenios.banear',['id'=>$solicitud->id_solicitud])}}" method="POST" style="display:inline;">
                                         @csrf
                                         @method('DELETE')
                                         <button type="submit" class="btn btn-danger btn-sm">Eliminar</button>
@@ -60,6 +70,7 @@
                         </tbody>
                     </table>
                 </div>
+                </div>
                 @include('share1.footer')
             </div>
             @include('share1.btn-config')
@@ -67,4 +78,5 @@
     </main>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>
+
 </html>

@@ -8,8 +8,9 @@ use Illuminate\Database\Eloquent\Model;
 class Proyecto extends Model
 {
     use HasFactory;
+
     // Nombre de la tabla
-    protected $table = 'Proyectos';
+    protected $table = 'proyectos';
 
     // Columna primaria personalizada
     protected $primaryKey = 'id_proyecto';
@@ -17,9 +18,11 @@ class Proyecto extends Model
     // Atributos que son asignables en masa
     protected $fillable = [
         'id_convenio',
+        'empresa_pertenencia',
         'proposito',
         'metas',
         'alcance',
+        'nombre_proyecto',
         'participantes',
     ];
 
@@ -29,3 +32,4 @@ class Proyecto extends Model
         return $this->belongsTo(Convenio::class, 'id_convenio', 'id_convenio');
     }
 }
+

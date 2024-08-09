@@ -9,71 +9,112 @@ use App\Models\Usuario;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Validation\ValidationException;
 use App\Models\Solicitud;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\DB;
+use App\Mail\Notificacion_solicitud;
+use Illuminate\Support\Facades\Auth;
 
 class ConvenioController extends Controller
 {
     // Método para registrar un nuevo convenio
     public function store(Request $request)
     {
-        // Validación
-        Log::info('Validación empezada');
-        $request->validate([
-            'idInstitucion' => 'required|exists:Empresas,id_empresa',
-            'content' => 'required|string',
-            'documento_pdf' => 'nullable|file|mimes:pdf|max:2048',
-        ]);
-        Log::info('Validación completada');
+        try {
+            // Validación
+            Log::info('Validación empezada');
+            $validatedData = $request->validate([
+                'idInstitucion' => 'required|exists:Empresas,id_empresa',
+                'content' => 'nullable|string',
+                'documento_pdf' => 'nullable|file|mimes:pdf|max:2048',
+            ]);
+            Log::info('Validación completada');
 
-        // Encontrar la empresa
-        Log::info('Obteniendo la empresa seleccionada', ['idInstitucion' => $request->input('idInstitucion')]);
-        $empresa = Empresa::find($request->input('idInstitucion'));
-        Log::info('Empresa obtenida', ['empresa' => $empresa]);
+            // Encontrar la empresa
+            Log::info('Obteniendo la empresa seleccionada', ['idInstitucion' => $validatedData['idInstitucion']]);
+            $empresa = Empresa::findOrFail($validatedData['idInstitucion']);
+            Log::info('Empresa obtenida', ['empresa' => $empresa]);
 
-        // Obtener el nombre del representante de la empresa
-        $nombreRepresentante = $empresa->representanteEmpresa;
-        Log::info('Nombre del representante de la empresa obtenido', ['representante' => $nombreRepresentante]);
+            // Obtener el nombre del representante de la empresa
+            $nombreRepresentante = $empresa->representanteEmpresa;
+            Log::info('Nombre del representante de la empresa obtenido', ['representante' => $nombreRepresentante]);
 
-        // Buscar el nombre del representante en la tabla Usuarios
-        $remitente = Usuario::where(DB::raw("CONCAT(nombreUsuario, ' ', apellidoPaterno, ' ', apellidoMaterno)"), $nombreRepresentante)->first();
-        Log::info('Usuario remitente obtenido', ['remitente' => $remitente]);
+            // Buscar el nombre del representante en la tabla Usuarios
+            $remitente = Usuario::where(DB::raw("CONCAT(nombreUsuario, ' ', apellidoPaterno, ' ', apellidoMaterno)"), $nombreRepresentante)->first();
+            if (!$remitente) {
+                Log::error('No se encontró el usuario remitente', ['representante' => $nombreRepresentante]);
+                return redirect()->back()->withErrors(['message' => 'El usuario remitente no existe.']);
+            }
+            Log::info('Usuario remitente obtenido', ['remitente' => $remitente]);
 
-        // Verificar existencia de usuarios
-        Log::info('Verificando existencia del usuario emisor');
-        $emisorExists = Usuario::find(auth()->user()->id_usuario);
-        if (!$emisorExists || !$remitente) {
-            Log::error('El usuario emisor o remitente no existe', ['emisorExists' => $emisorExists, 'remitente' => $remitente]);
-            return redirect()->back()->withErrors(['message' => 'El usuario emisor o remitente no existe.']);
+            // Verificar existencia de usuario emisor
+            $emisor = auth()->user();
+            if (!$emisor) {
+                Log::error('El usuario emisor no existe');
+                return redirect()->back()->withErrors(['message' => 'El usuario emisor no existe.']);
+            }
+            Log::info('Usuario emisor obtenido', ['emisor' => $emisor]);
+
+            // Guardar el documento PDF, si se ha subido
+            $documentoPdf = null;
+            if ($request->hasFile('documento_pdf')) {
+                $documentoPdf = $request->file('documento_pdf')->store('solicitudes', 'public');
+                Log::info('Documento PDF guardado', ['documento_pdf' => $documentoPdf]);
+            }
+
+            // Crear la solicitud
+            $solicitud = new Solicitud();
+            $solicitud->id_usuario_emisor = $emisor->id_usuario;
+            $solicitud->id_usuario_remitente = $remitente->id_usuario;
+            $solicitud->documento_pdf = $documentoPdf;
+            $solicitud->tipoSolicitud = 'convenio';
+            $solicitud->estado = 'pendiente';
+            $solicitud->save();
+            Log::info('Solicitud creada', ['solicitud' => $solicitud]);
+
+
+            // Enviar correo
+            $empresaSolicitante = $empresa->nombreEmpresa;
+            $nombreDestinatario = $remitente->nombreUsuario . ' ' . $remitente->apellidoPaterno . ' ' . $remitente->apellidoMaterno;
+            Mail::to($remitente->correoUsuario)->send(new Notificacion_solicitud($empresaSolicitante, $nombreDestinatario));
+            Log::info('Correo enviado', ['email' => $remitente->email]);
+
+            return redirect()->back()->with('success', 'Solicitud enviada correctamente.');
+        } catch (\Exception $e) {
+            Log::error('Error al enviar la solicitud', ['error' => $e->getMessage()]);
+            return redirect()->back()->withErrors(['message' => 'Ocurrió un error al enviar la solicitud.']);
         }
-        Log::info('Existencia de usuarios verificada');
-
-        // Guardar el documento PDF, si se ha subido
-        $documentoPdf = null;
-        if ($request->hasFile('documento_pdf')) {
-            $documentoPdf = $request->file('documento_pdf')->store('solicitudes', 'public');
-        }
-
-        // Crear la solicitud
-        $solicitud = new Solicitud();
-        $solicitud->id_usuario_emisor = auth()->user()->id_usuario; // Asumiendo que el usuario está autenticado
-        $solicitud->id_usuario_remitente = $remitente->id_usuario; // Remitente es el usuario asociado a la empresa
-        $solicitud->documento_pdf = $documentoPdf;
-        $solicitud->tipoSolicitud = 'convenio';
-        $solicitud->estado = 'pendiente'; // Estado inicial
-        $solicitud->save();
-
-        return redirect()->back()->with('success', 'Solicitud enviada correctamente.');
     }
 
 
-    // Método para listar todos los convenios
+    // Método para listar todos las solicitudes
     public function index()
     {
-        // Obtener todas las solicitudes
-        $solicitudes = Solicitud::with('emisor', 'remitente')->get();
+        // Obtener el usuario autenticado
+        $usuario = Auth()->user();
+        $usuarioId = $usuario->id_usuario;
+
+        // Obtener las solicitudes donde el usuario autenticado es el remitente y no han sido eliminadas por el remitente
+        $solicitudes = Solicitud::with('emisor', 'remitente')
+            ->where('id_usuario_remitente', $usuarioId)
+            ->where('deleted_by_remitente', false)
+            ->get();
 
         // Pasar las solicitudes a la vista
         return view('dashboars.Representantes.solicitudes', compact('solicitudes'));
+    }
+
+
+    public function SolcitudesEnviadas()
+    {
+
+        $usuario = Auth()->user();
+        $usuarioId = $usuario->id_usuario;
+
+        $solicitudes = Solicitud::with('emisor', 'remitente')
+            ->where('id_usuario_emisor', $usuarioId)
+            ->get();
+
+        return view('dashboars.Representantes.solicitudesRecibidas', compact('solicitudes'));
     }
 
     // Método para actualizar un convenio existente
@@ -140,7 +181,6 @@ class ConvenioController extends Controller
     public function uploadDocument(Request $request, $id)
     {
         $convenio = Convenio::findOrFail($id);
-
         if ($request->hasFile('documento')) {
             $path = $request->file('documento')->store('convenios');
 
@@ -149,24 +189,18 @@ class ConvenioController extends Controller
             } else {
                 $convenio->documento_receptor = $path;
             }
-
             $convenio->save();
         }
-
         return back()->with('success', 'Documento subido exitosamente.');
     }
 
-    public function finalize($id)
-    {
-        $convenio = Convenio::findOrFail($id);
-        $convenio->convenido = true;
-        $convenio->save();
 
-        return back()->with('success', 'Convenio concretado exitosamente.');
-    }
 
     public function gestionConvenios()
     {
+        $usuario = Auth()->user();
+        $usuarioId = $usuario->id_usuario;
+
         Log::info('retornando vista');
         $convenios = Convenio::with(['emisor', 'receptor'])->get();
         return view('dashboars.Representantes.gestiondeconvenios', compact('convenios'));
@@ -175,27 +209,56 @@ class ConvenioController extends Controller
     public function aceptarSolicitud($id)
     {
         $solicitud = Solicitud::findOrFail($id);
-        $solicitud->estado = 'Aceptado'; // Asegúrate de que 'estado' es el campo correcto
-        $solicitud->save();
 
-        return redirect()->route('convenios.index')->with('success', 'Solicitud aceptada con éxito.');
+        if ($solicitud->estado === 'pendiente') {
+            $solicitud->estado = 'aceptado';
+            $solicitud->save();
+
+            // Crear un nuevo convenio basado en la solicitud aceptada
+            $convenio = Convenio::create([
+                'id_usuario_emisor' => $solicitud->id_usuario_emisor,
+                'id_usuario_receptor' => $solicitud->id_usuario_remitente,
+                'estado' => 'pendiente',
+                'notas' => 'Convenio creado a partir de la solicitud aceptada.'
+            ]);
+
+            return redirect()->route('convenios.index')->with('success', 'Solicitud aceptada y convenio creado con éxito.');
+        }
+
+        return redirect()->route('convenios.index')->with('error', 'La solicitud ya ha sido aceptada o no está en estado pendiente.');
     }
+
 
     public function rechazarSolicitud($id)
     {
         $solicitud = Solicitud::findOrFail($id);
-        $solicitud->estado = 'Rechazado'; // Asegúrate de que 'estado' es el campo correcto
+        $solicitud->estado = 'Rechazado';
         $solicitud->save();
 
-        return redirect()->route('solicitudes.index')->with('success', 'Solicitud rechazada con éxito.');
+        return redirect()->route('convenios.index')->with('success', 'Solicitud rechazada con éxito.');
     }
 
     public function eliminarSolicitud($id)
     {
         $solicitud = Solicitud::findOrFail($id);
         $solicitud->delete();
-
-        return redirect()->route('solicitudes.index')->with('success', 'Solicitud eliminada con éxito.');
+        return redirect()->route('convenios.index')->with('success', 'Solicitud eliminada con éxito.');
     }
 
+    public function deleteByRemitente($id)
+    {
+        $solicitud = Solicitud::find($id);
+
+        if (!$solicitud) {
+            return redirect()->route('convenios.index')->with('error', 'Solicitud no encontrada.');
+        }
+
+        if ($solicitud->id_usuario_remitente == Auth::user()->id_usuario) {
+            $solicitud->deleted_by_remitente = true;
+            $solicitud->save();
+            return redirect()->route('convenios.index')->with('success', 'Solicitud eliminada con éxito.');
+        }
+
+        return redirect()->route('convenios.index')->with('error', 'No estás autorizado para eliminar esta solicitud.');
+    }
 }

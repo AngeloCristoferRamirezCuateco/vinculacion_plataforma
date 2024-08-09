@@ -19,35 +19,37 @@
         @include('share1.nav')
         <div class="content">
             @include('share1.nav_profile')
-            <h1>Edición de alumnos</h1>
-            
-            <form id="update-form" method="POST" action="{{ route('usuarios.update', $usuario->id_usuario) }}">
+            <div class="container mt-4 p-4" style="background-color: #fff; border-radius: 30px; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);">
+            <h1 class="text-center mb-3 fw-bold fs-4" style="color: inherit;">EDITAR ALUMNO</h1>
+            <form  class="row g-3 needs-validation" id="update-form" method="POST" action="{{ route('usuarios.update', $usuario->id_usuario) }}">
                 @csrf
                 @method('PUT')
-                <h2>Editar Usuario</h2>
+                
                 <input type="hidden" name="id_usuario" id="form-id_usuario" value="{{ $usuario->id_usuario }}">
-                <div class="col-md-4">
-                    <label class="form-label" for="form-nombreUsuario">Nombre</label>
-                    <input class="form-control" id="form-nombreUsuario" name="nombreUsuario" type="text" value="{{ old('nombreUsuario', $usuario->nombreUsuario) }}" required />
+                <div class="col-md-6">
+                    <label class="form-label fw-bold fs-8" for="form-nombreUsuario">Nombre</label>
+                    <input class="form-control border-primary" style="border-radius: 50px;" id="form-nombreUsuario" name="nombreUsuario" type="text" value="{{ old('nombreUsuario', $usuario->nombreUsuario) }}" required />
                 </div>
-                <div class="col-md-4">
-                    <label class="form-label" for="form-apellidoPaterno">Apellido Paterno</label>
-                    <input class="form-control" id="form-apellidoPaterno" name="apellidoPaterno" type="text" value="{{ old('apellidoPaterno', $usuario->apellidoPaterno) }}" required />
+                <div class="col-md-6">
+                    <label class="form-label fw-bold fs-8" for="form-apellidoPaterno">Apellido Paterno</label>
+                    <input class="form-control border-primary" style="border-radius: 50px;" id="form-apellidoPaterno" name="apellidoPaterno" type="text" value="{{ old('apellidoPaterno', $usuario->apellidoPaterno) }}" required />
                 </div>
-                <div class="col-md-4">
-                    <label class="form-label" for="form-apellidoMaterno">Apellido Materno</label>
-                    <input class="form-control" id="form-apellidoMaterno" name="apellidoMaterno" type="text" value="{{ old('apellidoMaterno', $usuario->apellidoMaterno) }}" required />
+                <div class="col-md-6">
+                    <label class="form-label fw-bold fs-8" for="form-apellidoMaterno">Apellido Materno</label>
+                    <input class="form-control border-primary" style="border-radius: 50px;" id="form-apellidoMaterno" name="apellidoMaterno" type="text" value="{{ old('apellidoMaterno', $usuario->apellidoMaterno) }}" required />
                 </div>
-                <div class="col-md-4">
-                    <label class="form-label" for="form-correoUsuario">Email</label>
-                    <input class="form-control" id="form-correoUsuario" name="correoUsuario" type="email" value="{{ old('correoUsuario', $usuario->correoUsuario) }}" required />
+                <div class="col-md-6">
+                    <label class="form-label fw-bold fs-8" for="form-correoUsuario">Email</label>
+                    <input class="form-control border-primary" style="border-radius: 50px;" id="form-correoUsuario" name="correoUsuario" type="email" value="{{ old('correoUsuario', $usuario->correoUsuario) }}" required />
                 </div>
-                <div class="col-12 mt-3">
-                    <button class="btn btn-secondary" type="button" onclick="window.history.back()">Volver</button>
-                    <button class="btn btn-primary" type="submit">Actualizar</button>
+                <div class="col-md-6">
+                    <button class="btn btn-primary col-md-12" style="border-radius: 50px;" type="button" onclick="window.history.back()">Volver</button>
+                </div>
+                <div class="col-md-6">
+                    <button class="btn btn-success col-md-12" style="border-radius: 50px;" type="submit">Actualizar</button>
                 </div>
             </form>
-
+            </div>
             @include('share1.footer')
         </div>
         @include('share1.btn-config')

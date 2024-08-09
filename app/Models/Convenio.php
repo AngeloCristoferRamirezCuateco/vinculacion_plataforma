@@ -17,7 +17,10 @@ class Convenio extends Model
         'id_usuario_receptor',
         'documento_emisor',
         'documento_receptor',
-        'convenido',
+        'estado',
+        'notas',
+        'fecha_aceptacion',
+        'fecha_finalizacion',
     ];
 
     public function emisor()
@@ -30,3 +33,4 @@ class Convenio extends Model
         return $this->belongsTo(Usuario::class, 'id_usuario_receptor');
     }
 }
+

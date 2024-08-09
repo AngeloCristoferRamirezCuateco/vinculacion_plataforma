@@ -12,8 +12,13 @@
         @include ('share.nav')
         <div class="content">
             @include ('share.nav_profile')
-            <h1>Empresas</h1>
+            <div class="container mt-4 p-4" style="background-color: #fff; border-radius: 30px; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);">
+            <h1 class="text-center mb-3 fw-bold fs-4" style="color: inherit;">EMPRESAS</h1>
             <div class="table-responsive">
+            <form method="GET" action="{{ route('admin.busquedasEmpresas') }}" class="d-flex mb-3">
+                <input class="form-control border-primary me-2" style="border-top-left-radius: 50px; border-bottom-left-radius: 50px;" type="text" name="query" placeholder="Buscar empresa..." required>
+                <button class="btn btn-primary" style="border-top-right-radius: 50px; border-bottom-right-radius: 50px;" type="submit">Buscar</button>
+            </form>
                 <table class="table align-middle">
                     <thead>
                         <tr>
@@ -51,6 +56,7 @@
                         @endforeach
                     </tbody>
                 </table>
+            </div>
             </div>
 
             @include ('share.footer')

@@ -71,14 +71,14 @@ class login extends Controller
                     case 1:
                         $userId = Auth::id();
                         $user = Auth::user();
-                        return redirect()->route('alumno.panelInicio', [
+                        return view('dashboars.Alumnos.proyectos', [
                             'userId' => $userId,
                             'user' => $user,
                         ]);
                     case 2:
                         $userId = Auth::id();
                         $user = Auth::user();
-                        return redirect()->route('docente.panelInicio', [
+                        return redirect()->route('docente.asignaciondocentealumno', [
                             'userId' => $userId,
                             'user' => $user,
                         ]);
@@ -97,7 +97,8 @@ class login extends Controller
                             'Rol' => $Rol
                         ]);
                     case 4:
-                        return redirect()->route('dashboard.index');
+                        //return redirect()->route('dashboard.index');
+                        return view('dashboars.Administradores.data');
                     default:
                         return response()->json(['message' => 'Rol no reconocido'], 200);
                 }

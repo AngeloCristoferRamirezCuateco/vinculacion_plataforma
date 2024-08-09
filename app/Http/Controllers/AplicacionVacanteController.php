@@ -5,7 +5,9 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\AplicacionVacante;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Validation\ValidationException;
+use App\Models\Vacante;
 
 
 class AplicacionVacanteController extends Controller
@@ -13,22 +15,41 @@ class AplicacionVacanteController extends Controller
     // Método para registrar una nueva aplicación de vacante
     public function store(Request $request)
     {
+        // Obtener el ID del usuario autenticado desde la sesión
+        $id_usuario = Auth::user()->id_usuario;
+
+        // Validar los datos de la solicitud
         $request->validate([
-            'id_usuario' => 'required|exists:Usuarios,id_usuario',
             'id_vacante' => 'required|exists:Vacantes,id_vacante',
         ]);
 
-        AplicacionVacante::create($request->all());
+        // Crear la aplicación de vacante
+        AplicacionVacante::create([
+            'id_usuario' => $id_usuario,
+            'id_vacante' => $request->input('id_vacante'),
+            'curriculumUsuario' => Auth::user()->curriculumUsuario, // Suponiendo que el curriculum está en el perfil del usuario
+            'fechaAplicacion' => now(), // Fecha actual
+            'estadoSolicitud' => 'pendiente', // Estado inicial
+        ]);
 
-        return response()->json(['message' => 'Aplicación a vacante creada exitosamente.'], 201);
+        //return response()->json(['message' => 'Aplicación a vacante creada exitosamente.'], 201);
+        return redirect()->back();
     }
+
 
     // Método para listar todas las aplicaciones de vacantes
     public function index()
-    {
-        $aplicaciones = AplicacionVacante::all();
-        return response()->json($aplicaciones, 200);
-    }
+{
+    // Obtener el ID de la empresa del usuario autenticado
+    $id_empresa = Auth::user()->id_empresa;
+
+    // Obtener las vacantes asociadas a la empresa del representante
+    $vacantes = Vacante::where('id_empresa', $id_empresa)->get();
+
+
+    return view('dashboars.Representantes.listavacantes', compact('vacantes'));
+}
+
 
     // Método para mostrar una aplicación de vacante específica
     public function show($id)
@@ -57,11 +78,9 @@ class AplicacionVacanteController extends Controller
             Log::info('Datos actualizados.', ['aplicacion' => $aplicacion]);
 
             return response()->json(['message' => 'Aplicación de vacante actualizada correctamente.'], 200);
-
         } catch (ValidationException $e) {
             Log::error('Error de validación.', ['errors' => $e->errors()]);
             return response()->json(['errors' => $e->errors()], 422);
-
         } catch (\Exception $e) {
             Log::error('Error al actualizar la aplicación de vacante.', ['exception' => $e->getMessage()]);
             return response()->json(['message' => 'Error al actualizar la aplicación de vacante.'], 500);

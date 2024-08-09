@@ -29,32 +29,49 @@
                             <hr class="mb-0 navbar-vertical-divider" />
                         </div>
                     </div>
-                    <a class="nav-link" href="{{route('representante.dashboard')}}">
-                        <div class="d-flex align-items-center"><span class="nav-link-icon"><span class="fas fa-users "></span></span><span class="nav-link-text ps-1">Estado de la empresa</span>
-                        </div>
-                    </a>
+                    
                     <a class="nav-link" href="{{route('representante.panelConvenio')}}">
                         <div class="d-flex align-items-center"><span class="nav-link-icon"><span class="fas fa-users "></span></span><span class="nav-link-text ps-1">Solicitar Convenio</span>
                         </div>
                     </a>
+                    <a class="nav-link" href="{{route('convenios.SolicitudesEnviadas')}}">
+                        <div class="d-flex align-items-center"><span class="nav-link-icon"><span class="fas fa-users "></span></span><span class="nav-link-text ps-1">Solicitudes enviadas</span>
+                        </div>
+                    </a>
                     <a class="nav-link" href="{{route('convenios.index')}}">
-                        <div class="d-flex align-items-center"><span class="nav-link-icon"><span class="fas fa-users "></span></span><span class="nav-link-text ps-1">Solicitudes</span>
+                        <div class="d-flex align-items-center"><span class="nav-link-icon"><span class="fas fa-users "></span></span><span class="nav-link-text ps-1">Solicitudes recibidas</span>
+                        </div>
+                    </a>
+                    <a class="nav-link" href="{{route('vacantes.solicitudes')}}">
+                        <div class="d-flex align-items-center"><span class="nav-link-icon"><span class="fas fa-users "></span></span><span class="nav-link-text ps-1">Solicitudes Usuarios</span>
                         </div>
                     </a>
                     <a class="nav-link" href="{{ route('representante.gestion') }}">
                         <div class="d-flex align-items-center"><span class="nav-link-icon"><span class="fas fa-users "></span></span><span class="nav-link-text ps-1">Convenios</span>
                         </div>
                     </a>
+                    <a class="nav-link" href="{{route('proyect.create')}}">
+                        <div class="d-flex align-items-center"><span class="nav-link-icon"><span class="fas fa-users "></span></span><span class="nav-link-text ps-1">Crear Proyecto</span>
+                        </div>
+                    </a>
                     <a class="nav-link" href="{{route('representante.panelVacante')}}">
                         <div class="d-flex align-items-center"><span class="nav-link-icon"><span class="fas fa-users "></span></span><span class="nav-link-text ps-1">Crear Vacante</span>
                         </div>
                     </a>
-                    <a class="nav-link" href="#" role="button">
+                    <a class="nav-link" href="{{route('lista.vacantes')}}">
+                        <div class="d-flex align-items-center"><span class="nav-link-icon"><span class="fas fa-users "></span></span><span class="nav-link-text ps-1">Lista vacantes</span>
+                        </div>
+                    </a>
+                    <a class="nav-link" href="{{ route('proyectos.lista') }}" role="button">
                         <div class="d-flex align-items-center"><span class="nav-link-icon"><span class="fas fa-comments"></span></span><span class="nav-link-text ps-1">Proyectos</span>
                         </div>
                     </a>
                     <a class="nav-link" href="{{route('representante.panelInicio')}}" role="button">
                         <div class="d-flex align-items-center"><span class="nav-link-icon"><span class="fas fa-file-alt "></span></span><span class="nav-link-text ps-1">Registrar Usuarios</span>
+                        </div>
+                    </a>
+                    <a class="nav-link" href="{{route('representante.asignar-docente')}}">
+                        <div class="d-flex align-items-center"><span class="nav-link-icon"><span class="fas fa-users "></span></span><span class="nav-link-text ps-1">Asignar Docente</span>
                         </div>
                     </a>
                     <a class="nav-link" href="{{route('representante.panelDocentes')}}" role="button">
@@ -65,14 +82,7 @@
                         <div class="d-flex align-items-center"><span class="nav-link-icon"><span class="fas fa-address-card "></span></span><span class="nav-link-text ps-1">Alumnos</span>
                         </div>
                     </a>
-                    <a class="nav-link" href="{{route('representante.panelDocumento')}}" role="button">
-                        <div class="d-flex align-items-center"><span class="nav-link-icon"><span class="fas fa-file-alt "></span></span><span class="nav-link-text ps-1">Documentos</span>
-                        </div>
-                    </a>
-                    <a class="nav-link" href="{{route('prueba')}}" role="button">
-                        <div class="d-flex align-items-center"><span class="nav-link-icon"><span class="fas fa-file-alt "></span></span><span class="nav-link-text ps-1">Prueba</span>
-                        </div>
-                    </a>
+     
                     <div class="row navbar-vertical-label-wrapper mt-3 mb-2">
 
                         <div class="col-auto navbar-vertical-label"><span class="nav-link-icon"><span class="bi-gear-fill"></span></span><span class="nav-link-text ps-1">Configuración</span></div>
